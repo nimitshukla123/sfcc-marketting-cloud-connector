@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
+    <service-credential service-credential-id="marketingcloud.sftp">
+        <url>ftp.YOUR_INSTANCE.exacttarget.com</url>
+        <user-id>SFTP USER ID</user-id>
+        <password masked="true">********</password>
+    </service-credential>
+
+    <service-credential service-credential-id="marketingcloud.rest.auth">
+        <url>https://YOUR_SUBDOMAIN.auth.marketingcloudapis.com/v2/token</url>
+        <user-id>API User ID</user-id>
+        <password masked="true">********</password>
+    </service-credential>
+
+    <service-profile service-profile-id="marketingcloud.rest">
+        <timeout-millis>0</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+
+    <service-profile service-profile-id="marketingcloud.soap">
+        <timeout-millis>0</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+
+    <service-profile service-profile-id="marketingcloud.sftp">
+        <timeout-millis>0</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+
+    <service service-id="marketingcloud.rest.auth">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>marketingcloud_rest</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>marketingcloud.rest</profile-id>
+        <credential-id>marketingcloud.rest.auth</credential-id>
+    </service>
+
+    <service service-id="marketingcloud.rest.messaging.send">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>marketingcloud_rest</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>marketingcloud.rest</profile-id>
+        <credential-id/>
+    </service>
+
+    <service service-id="marketingcloud.soap.create">
+        <service-type>SOAP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>marketingcloud_soap</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>marketingcloud.soap</profile-id>
+        <credential-id/>
+    </service>
+
+    <service service-id="marketingcloud.soap.retrieve">
+        <service-type>SOAP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>marketingcloud_soap</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>marketingcloud.soap</profile-id>
+        <credential-id/>
+    </service>
+
+    <service service-id="marketingcloud.sftp">
+        <service-type>SFTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix/>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>marketingcloud.sftp</profile-id>
+        <credential-id>marketingcloud.sftp</credential-id>
+    </service>
+
+</services>

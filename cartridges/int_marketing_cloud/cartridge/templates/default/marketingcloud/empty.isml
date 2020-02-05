@@ -1,0 +1,16 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isreplace/>
+<iscomment>
+    This decorator just place the decorated template in order to produce
+    correct partial pages (e.g. only the inner template) if needed.
+    This is necessary to provide a partial page only, e.g. a category landing
+    page if it was requested through an Ajax request, where an additional
+    decoration has to be omitted.
+</iscomment>
+<isscript>
+    var format = pdict.CurrentHttpParameterMap.format.stringValue;
+    if (format === 'ajax') {
+        var hookHelper = require('app_storefront_controllers/cartridge/scripts/template/hookHelper');
+        hookHelper.callHook('app.template.ajaxPartial', null, {pdict: pdict});
+    }
+</isscript>

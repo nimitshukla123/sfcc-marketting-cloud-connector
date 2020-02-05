@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<custom-objects xmlns="http://www.demandware.com/xml/impex/customobject/2006-10-31">
+    <custom-object type-id="MarketingCloudAnalytics" object-id="updateContent">
+        <object-attribute attribute-id="analyticAttributes">{&#13;
+            "content": {"label": "item_type", "static": true},&#13;
+            "Content.ID": "item",&#13;
+            "Product.ID": "url",&#13;
+            "Content.online": {"label": "available", "type": "bool"},&#13;
+            "Content.name": "name",&#13;
+            "Content.description": "abstract"&#13;
+            }</object-attribute>
+        <object-attribute attribute-id="description">MC System event, not a custom event, so no custom event name. This event is used to update the details for a content asset.</object-attribute>
+        <object-attribute attribute-id="enabled">false</object-attribute>
+    </custom-object>
+
+    <custom-object type-id="MarketingCloudAnalytics" object-id="updateProduct">
+        <object-attribute attribute-id="analyticAttributes">{&#13;
+            "product": {"label": "item_type", "static": true},&#13;
+            "Product.masterProduct.ID": {"label":"item", "condition": "Product.variant", "fallback": "Product.ID"},&#13;
+            "Product.name": "name",&#13;
+            "ProductLink": {"label":"url", "required":true},&#13;
+            "Product.ID": "unique_id",&#13;
+            "ImageLink": {"label":"image_url", "imageType":"large"},&#13;
+            "SalePrice": {"label":"sale_price", "fallback": "DefaultProduct.priceModel.price.decimalValue"},&#13;
+            "StandardPrice": {"label":"price", "fallback": "Product.priceModel.price.decimalValue"},&#13;
+            "Product.shortDescription": "description"&#13;
+            }</object-attribute>
+        <object-attribute attribute-id="description">MC System event, not a custom event, so no custom event name. This event is used to update the details for a product.</object-attribute>
+        <object-attribute attribute-id="enabled">false</object-attribute>
+    </custom-object>
+
+    <custom-object type-id="MarketingCloudAnalytics" object-id="cartAddCoupon">
+        <object-attribute attribute-id="analyticAttributes">{&#13;
+            "EventValue": "couponCodeUsed"&#13;
+            }</object-attribute>
+        <object-attribute attribute-id="customEventName">cartAddCoupon</object-attribute>
+        <object-attribute attribute-id="description">Customer added coupon to cart.</object-attribute>
+        <object-attribute attribute-id="enabled">false</object-attribute>
+    </custom-object>
+
+    <custom-object type-id="MarketingCloudAnalytics" object-id="mailingListSubscribed">
+        <object-attribute attribute-id="analyticAttributes">{&#13;
+            "EventValue": "subscriberEmail"&#13;
+            }</object-attribute>
+        <object-attribute attribute-id="customEventName">mailingListSubscribed</object-attribute>
+        <object-attribute attribute-id="enabled">false</object-attribute>
+    </custom-object>
+
+    <custom-object type-id="MarketingCloudAnalytics" object-id="setUserInfo">
+        <object-attribute attribute-id="analyticAttributes">{&#13;
+            "Profile.customerNo": {"label":"customerNo", "condition":"Customer.registered"},&#13;
+            "Profile.firstName": {"label":"firstName", "condition":"Customer.registered"},&#13;
+            "Profile.lastName": {"label":"lastName", "condition":"Customer.registered"}&#13;
+            }</object-attribute>
+        <object-attribute attribute-id="description">MC System event, not a custom event, so no custom event name. Sets customer details on every page load.</object-attribute>
+        <object-attribute attribute-id="enabled">true</object-attribute>
+    </custom-object>
+
+</custom-objects>

@@ -1,0 +1,33 @@
+{
+  "name": "marketing-cloud-connector",
+  "version": "2.2.1",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-subset": "^1.5.0",
+    "eslint": "^3.2.2",
+    "eslint-config-airbnb-base": "^5.0.1",
+    "eslint-plugin-import": "^1.12.0",
+    "jsdoc-to-markdown": "^5.0.1",
+    "proxyquire": "1.7.4",
+    "request-promise": "^4.2.2",
+    "sgmf-scripts": "^2.1.1"
+  },
+  "scripts": {
+    "docs": "jsdoc2md --files cartridges/**/*.js > api.md",
+    "treegen": "find . -exec git ls-files -z -o -k -d --directory -x '\\\\.*' {} + | tr '\\000' '|' | sed -e 's/|$/.*/g;s!/|!|!g;s/\\./\\\\./g;s/^/.*/g;s/|/.*|.*/g' | awk '{print $1\"|.*\\\\.git.*\"}' | xargs -J % find -E . ! -regex '%' | sed -e 's;[^/]*\\/;|__;g;s;__|; |;g'",
+    "cover": "sgmf-scripts --cover",
+    "test": "sgmf-scripts --test test/unit/**/*.js",
+    "test:integration": "sgmf-scripts --integration 'test/integration/**/*.js'",
+    "lint": "sgmf-scripts --lint js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SalesforceCommerceCloud/marketing-cloud-connector.git"
+  },
+  "author": "Jonathan Langevin <jlangevin@salesforce.com>",
+  "license": "MIT",
+  "browserslist": [
+    "last 2 versions",
+    "ie >= 10"
+  ]
+}

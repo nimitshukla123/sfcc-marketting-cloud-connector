@@ -1,0 +1,776 @@
+{
+  "step-types": {
+    "script-module-step": [
+      {
+        "@type-id": "custom.MCC-InitTriggers",
+        "@supports-parallel-execution": "false",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Trigger Init, useful for developer to recreate trigger configurations.",
+        "module": "int_marketing_cloud/cartridge/scripts/jobs/triggers.js",
+        "function": "initTriggers",
+        "transactional": "true",
+        "timeout-in-seconds": "900",
+        "parameters": {
+          "parameter": [
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "FINISHED",
+              "description": "Used when the step finished successfully."
+            },
+            {
+              "@code": "FINISHED_WITH_WARNINGS",
+              "description": "Used when the step finished with warnings."
+            }
+          ]
+        }
+      },
+      {
+        "@type-id": "custom.MCC-Feed-UploadCatalog",
+        "@supports-parallel-execution": "true",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Feed Upload Catalog",
+        "module": "int_marketing_cloud/cartridge/scripts/feeds/upload.js",
+        "function": "sftpUpload",
+        "transactional": "false",
+        "timeout-in-seconds": "900",
+        "parameters": {
+          "parameter": [
+            {
+              "@name": "SFTPServiceID",
+              "@type": "string",
+              "@required": "true",
+              "description": "Administration>Operations>Services - SFTP Service ID",
+              "default-value": "marketingcloud.sftp"
+            },
+            {
+              "@name": "ExportFileName",
+              "@type": "string",
+              "@required": "true",
+              "@trim": "true",
+              "description": "Filename for the exported feed.",
+              "default-value": "catalogFeed.psv"
+            },
+            {
+              "@name": "AddDateExtension",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "Add the current date as an extension to the file name",
+              "default-value": "false"
+            },
+            {
+              "@name": "TargetPath",
+              "@type": "string",
+              "@required": "false",
+              "@trim": "true",
+              "description": "Directory path the file should be stored into on the destination server.",
+              "default-value": "/Import/"
+            }
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "FINISHED",
+              "description": "Used when the step finished successfully."
+            },
+            {
+              "@code": "FINISHED_WITH_WARNINGS",
+              "description": "Used when the step finished with warnings."
+            }
+          ]
+        }
+      },
+      {
+        "@type-id": "custom.MCC-Feed-UploadContent",
+        "@supports-parallel-execution": "true",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Feed Upload Content",
+        "module": "int_marketing_cloud/cartridge/scripts/feeds/upload.js",
+        "function": "sftpUpload",
+        "transactional": "false",
+        "timeout-in-seconds": "900",
+        "parameters": {
+          "parameter": [
+            {
+              "@name": "SFTPServiceID",
+              "@type": "string",
+              "@required": "true",
+              "description": "Administration>Operations>Services - SFTP Service ID",
+              "default-value": "marketingcloud.sftp"
+            },
+            {
+              "@name": "ExportFileName",
+              "@type": "string",
+              "@required": "true",
+              "@trim": "true",
+              "description": "Filename for the exported feed.",
+              "default-value": "contentFeed.psv"
+            },
+            {
+              "@name": "AddDateExtension",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "Add the current date as an extension to the file name",
+              "default-value": "false"
+            },
+            {
+              "@name": "TargetPath",
+              "@type": "string",
+              "@required": "false",
+              "@trim": "true",
+              "description": "Directory path the file should be stored into on the destination server.",
+              "default-value": "/Import/"
+            }
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "FINISHED",
+              "description": "Used when the step finished successfully."
+            },
+            {
+              "@code": "FINISHED_WITH_WARNINGS",
+              "description": "Used when the step finished with warnings."
+            }
+          ]
+        }
+      },
+      {
+        "@type-id": "custom.MCC-Feed-UploadOrders",
+        "@supports-parallel-execution": "true",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Feed Upload Orders",
+        "module": "int_marketing_cloud/cartridge/scripts/feeds/upload.js",
+        "function": "sftpUpload",
+        "transactional": "false",
+        "timeout-in-seconds": "900",
+        "parameters": {
+          "parameter": [
+            {
+              "@name": "SFTPServiceID",
+              "@type": "string",
+              "@required": "true",
+              "description": "Administration>Operations>Services - SFTP Service ID",
+              "default-value": "marketingcloud.sftp"
+            },
+            {
+              "@name": "ExportFileName",
+              "@type": "string",
+              "@required": "true",
+              "@trim": "true",
+              "description": "Filename for the exported feed.",
+              "default-value": "ordersFeed.psv"
+            },
+            {
+              "@name": "AddDateExtension",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "Add the current date as an extension to the file name",
+              "default-value": "false"
+            },
+            {
+              "@name": "TargetPath",
+              "@type": "string",
+              "@required": "false",
+              "@trim": "true",
+              "description": "Directory path the file should be stored into on the destination server.",
+              "default-value": "/Import/"
+            }
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "FINISHED",
+              "description": "Used when the step finished successfully."
+            },
+            {
+              "@code": "FINISHED_WITH_WARNINGS",
+              "description": "Used when the step finished with warnings."
+            }
+          ]
+        }
+      },
+      {
+        "@type-id": "custom.MCC-Feed-UploadPromotions",
+        "@supports-parallel-execution": "true",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Feed Upload Promotions",
+        "module": "int_marketing_cloud/cartridge/scripts/feeds/upload.js",
+        "function": "sftpUpload",
+        "transactional": "false",
+        "timeout-in-seconds": "900",
+        "parameters": {
+          "parameter": [
+            {
+              "@name": "SFTPServiceID",
+              "@type": "string",
+              "@required": "true",
+              "description": "Administration>Operations>Services - SFTP Service ID",
+              "default-value": "marketingcloud.sftp"
+            },
+            {
+              "@name": "ExportFileName",
+              "@type": "string",
+              "@required": "true",
+              "@trim": "true",
+              "description": "Filename for the exported feed.",
+              "default-value": "promotionsFeed.psv"
+            },
+            {
+              "@name": "AddDateExtension",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "Add the current date as an extension to the file name",
+              "default-value": "false"
+            },
+            {
+              "@name": "TargetPath",
+              "@type": "string",
+              "@required": "false",
+              "@trim": "true",
+              "description": "Directory path the file should be stored into on the destination server.",
+              "default-value": "/Import/"
+            }
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "FINISHED",
+              "description": "Used when the step finished successfully."
+            },
+            {
+              "@code": "FINISHED_WITH_WARNINGS",
+              "description": "Used when the step finished with warnings."
+            }
+          ]
+        }
+      },
+      {
+        "@type-id": "custom.MCC-Feed-UploadCustomers",
+        "@supports-parallel-execution": "true",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Feed Upload Customers",
+        "module": "int_marketing_cloud/cartridge/scripts/feeds/upload.js",
+        "function": "sftpUpload",
+        "transactional": "false",
+        "timeout-in-seconds": "900",
+        "parameters": {
+          "parameter": [
+            {
+              "@name": "SFTPServiceID",
+              "@type": "string",
+              "@required": "true",
+              "description": "Administration>Operations>Services - SFTP Service ID",
+              "default-value": "marketingcloud.sftp"
+            },
+            {
+              "@name": "ExportFileName",
+              "@type": "string",
+              "@required": "true",
+              "@trim": "true",
+              "description": "Filename for the exported feed.",
+              "default-value": "customersFeed.psv"
+            },
+            {
+              "@name": "AddDateExtension",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "Add the current date as an extension to the file name",
+              "default-value": "false"
+            },
+            {
+              "@name": "TargetPath",
+              "@type": "string",
+              "@required": "false",
+              "@trim": "true",
+              "description": "Directory path the file should be stored into on the destination server.",
+              "default-value": "/Import/"
+            }
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "FINISHED",
+              "description": "Used when the step finished successfully."
+            },
+            {
+              "@code": "FINISHED_WITH_WARNINGS",
+              "description": "Used when the step finished with warnings."
+            }
+          ]
+        }
+      }
+    ],
+    "chunk-script-module-step": [
+      {
+        "@type-id": "custom.MCC-CompileMappingTemplates",
+        "@supports-parallel-execution": "false",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Cartridge - Compile mapping templates. Generates Velocity templates based on data mapping rules.",
+        "module": "int_marketing_cloud/cartridge/scripts/jobs/compileMappingTemplates.js",
+        "before-step-function": "beforeStep",
+        "total-count-function": "getTotalCount",
+        "before-chunk-function": "",
+        "read-function": "read",
+        "process-function": "process",
+        "write-function": "write",
+        "after-chunk-function": "",
+        "after-step-function": "afterStep",
+        "chunk-size": 10,
+        "transactional": "false",
+        "parameters": {
+          "parameter": [
+            {
+              "@name": "ObjectType",
+              "@type": "string",
+              "@required": "true",
+              "description": "The object type to generate templates for.",
+              "enum-values":
+              {
+                "value":
+                [
+                  "Triggers",
+                  "DataFeeds",
+                  "Analytics"
+                ]
+              }
+            }
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "OK",
+              "description": "Used when the step finished successfully."
+            }
+          ]
+        }
+      },
+      {
+        "@type-id": "custom.MCC-Feed-ExportCatalog",
+        "@supports-parallel-execution": "false",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Catalog Export",
+        "module": "int_marketing_cloud/cartridge/scripts/feeds/catalog.js",
+        "before-step-function": "beforeStep",
+        "total-count-function": "getTotalCount",
+        "before-chunk-function": "",
+        "read-function": "read",
+        "process-function": "process",
+        "write-function": "write",
+        "after-chunk-function": "",
+        "after-step-function": "afterStep",
+        "chunk-size": 10,
+        "transactional": "false",
+        "parameters": {
+          "parameter": [
+            {
+              "@name": "ExportID",
+              "@type": "string",
+              "@required": "true",
+              "description": "Export ID for this feed, should match exportID value from custom object definition.",
+              "default-value": "catalogFeed"
+            },
+            {
+              "@name": "ExportFileName",
+              "@type": "string",
+              "@required": "true",
+              "@trim": "true",
+              "description": "Filename for the exported feed.",
+              "default-value": "catalogFeed.psv"
+            },
+            {
+              "@name": "Delimiter",
+              "@type": "string",
+              "@required": "true",
+              "description": "Delimiter character.",
+              "default-value": "|",
+              "enum-values":
+              {
+                "value":
+                [
+                  "|",
+                  ",",
+                  "TAB"
+                ]
+              }
+            },
+            {
+              "@name": "IncrementalExport",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "If set, only updates since the last export are transmitted."
+            },
+            {
+              "@name": "IncludeMasterProduct",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "Specify whether the exported catalog should include master products.",
+              "default-value": "true"
+            },
+            {
+              "@name": "IncludeVariantProduct",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "Specify whether the exported catalog should include variant products.",
+              "default-value": "true"
+            },
+            {
+              "@name": "IncludeVariationGroupProduct",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "Specify whether the exported catalog should include variation group products.",
+              "default-value": "true"
+            },
+            {
+              "@name": "IncludeSimpleProduct",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "Specify whether the exported catalog should include simple products.",
+              "default-value": "true"
+            }
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "OK",
+              "description": "Used when the step finished successfully."
+            }
+          ]
+        }
+      },
+      {
+        "@type-id": "custom.MCC-Feed-ExportContent",
+        "@supports-parallel-execution": "false",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Content Export",
+        "module": "int_marketing_cloud/cartridge/scripts/feeds/content.js",
+        "before-step-function": "beforeStep",
+        "total-count-function": "",
+        "before-chunk-function": "",
+        "read-function": "read",
+        "process-function": "process",
+        "write-function": "write",
+        "after-chunk-function": "",
+        "after-step-function": "afterStep",
+        "chunk-size": 10,
+        "transactional": "false",
+        "parameters": {
+          "parameter": [
+            {
+              "@name": "ExportID",
+              "@type": "string",
+              "@required": "true",
+              "description": "Export ID for this feed, should match exportID value from custom object definition.",
+              "default-value": "contentFeed"
+            },
+            {
+              "@name": "ExportFileName",
+              "@type": "string",
+              "@required": "true",
+              "@trim": "true",
+              "description": "Filename for the exported feed.",
+              "default-value": "contentFeed.psv"
+            },
+            {
+              "@name": "Delimiter",
+              "@type": "string",
+              "@required": "true",
+              "description": "Delimiter character.",
+              "default-value": "|",
+              "enum-values":
+              {
+                "value":
+                [
+                  "|",
+                  ",",
+                  "TAB"
+                ]
+              }
+            },
+            {
+              "@name": "IncrementalExport",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "If set, only updates since the last export are transmitted."
+            }
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "OK",
+              "description": "Used when the step finished successfully."
+            }
+          ]
+        }
+      },
+      {
+        "@type-id": "custom.MCC-Feed-ExportOrders",
+        "@supports-parallel-execution": "false",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Orders Export",
+        "module": "int_marketing_cloud/cartridge/scripts/feeds/orders.js",
+        "before-step-function": "beforeStep",
+        "total-count-function": "getTotalCount",
+        "before-chunk-function": "",
+        "read-function": "read",
+        "process-function": "process",
+        "write-function": "write",
+        "after-chunk-function": "",
+        "after-step-function": "afterStep",
+        "chunk-size": 10,
+        "transactional": "false",
+        "parameters": {
+          "parameter": [
+            {
+              "@name": "ExportID",
+              "@type": "string",
+              "@required": "true",
+              "description": "Export ID for this feed, should match exportID value from custom object definition.",
+              "default-value": "ordersFeed"
+            },
+            {
+              "@name": "ExportFileName",
+              "@type": "string",
+              "@required": "true",
+              "@trim": "true",
+              "description": "Filename for the exported feed.",
+              "default-value": "ordersFeed.psv"
+            },
+            {
+              "@name": "Delimiter",
+              "@type": "string",
+              "@required": "true",
+              "description": "Delimiter character.",
+              "default-value": "|",
+              "enum-values":
+              {
+                "value":
+                [
+                  "|",
+                  ",",
+                  "TAB"
+                ]
+              }
+            },
+            {
+              "@name": "IncrementalExport",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "If set, only updates since the last export are transmitted."
+            }
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "OK",
+              "description": "Used when the step finished successfully."
+            }
+          ]
+        }
+      },
+      {
+        "@type-id": "custom.MCC-Feed-ExportPromotions",
+        "@supports-parallel-execution": "false",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Promotions Export",
+        "module": "int_marketing_cloud/cartridge/scripts/feeds/promotions.js",
+        "before-step-function": "beforeStep",
+        "total-count-function": "getTotalCount",
+        "before-chunk-function": "",
+        "read-function": "read",
+        "process-function": "process",
+        "write-function": "write",
+        "after-chunk-function": "",
+        "after-step-function": "afterStep",
+        "chunk-size": 10,
+        "transactional": "false",
+        "parameters": {
+          "parameter": [
+            {
+              "@name": "ExportID",
+              "@type": "string",
+              "@required": "true",
+              "description": "Export ID for this feed, should match exportID value from custom object definition.",
+              "default-value": "promotionsFeed"
+            },
+            {
+              "@name": "ExportFileName",
+              "@type": "string",
+              "@required": "true",
+              "@trim": "true",
+              "description": "Filename for the exported feed.",
+              "default-value": "promotionsFeed.psv"
+            },
+            {
+              "@name": "Delimiter",
+              "@type": "string",
+              "@required": "true",
+              "description": "Delimiter character.",
+              "default-value": "|",
+              "enum-values":
+              {
+                "value":
+                [
+                  "|",
+                  ",",
+                  "TAB"
+                ]
+              }
+            },
+            {
+              "@name": "IncrementalExport",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "If set, only updates since the last export are transmitted."
+            }
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "OK",
+              "description": "Used when the step finished successfully."
+            }
+          ]
+        }
+      },
+      {
+        "@type-id": "custom.MCC-Feed-ExportCustomers",
+        "@supports-parallel-execution": "false",
+        "@supports-site-context": "true",
+        "@supports-organization-context": "false",
+        "description": "Marketing Cloud Customers Export",
+        "module": "int_marketing_cloud/cartridge/scripts/feeds/customers.js",
+        "before-step-function": "beforeStep",
+        "total-count-function": "getTotalCount",
+        "before-chunk-function": "",
+        "read-function": "read",
+        "process-function": "process",
+        "write-function": "write",
+        "after-chunk-function": "",
+        "after-step-function": "afterStep",
+        "chunk-size": 10,
+        "transactional": "false",
+        "parameters": {
+          "parameter": [
+            {
+              "@name": "ExportID",
+              "@type": "string",
+              "@required": "true",
+              "description": "Export ID for this feed, should match exportID value from custom object definition.",
+              "default-value": "customersFeed"
+            },
+            {
+              "@name": "ExportFileName",
+              "@type": "string",
+              "@required": "true",
+              "@trim": "true",
+              "description": "Filename for the exported feed.",
+              "default-value": "customersFeed.psv"
+            },
+            {
+              "@name": "Delimiter",
+              "@type": "string",
+              "@required": "true",
+              "description": "Delimiter character.",
+              "default-value": "|",
+              "enum-values":
+              {
+                "value":
+                [
+                  "|",
+                  ",",
+                  "TAB"
+                ]
+              }
+            },
+            {
+              "@name": "IncrementalExport",
+              "@type": "boolean",
+              "@required": "false",
+              "description": "If set, only updates since the last export are transmitted."
+            }
+          ]
+        },
+        "status-codes": {
+          "status": [
+            {
+              "@code": "ERROR",
+              "description": "Used when the step failed with an error."
+            },
+            {
+              "@code": "OK",
+              "description": "Used when the step finished successfully."
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

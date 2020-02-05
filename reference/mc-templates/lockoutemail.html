@@ -1,0 +1,34 @@
+%%[
+var @fn, @ln
+
+SET @fn = AttributeValue("FirstName")
+SET @ln = AttributeValue("LastName")
+]%%
+
+<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<td align="center" style="background:#e0e0e0;padding:50px 0;">
+			<center>
+				<table style="background:#ffffff;border:1px solid #999999;width:680px;">
+					<tr>
+						<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+
+							<h1 style="font-size:20px;font-family:georgia;font-weight:normal;">
+								Dear %%=v(@fn)=%% %%=v(@ln)=%%,
+							</h1>
+
+							<p>Your account has been temporarily locked because the maximum number of invalid logins has been exceeded.</p>
+
+							<p>Please try logging in again later.</p>
+
+							<p>If you feel you have received this email in error, please contact customer service.</p>
+
+							<p>This is an automatically generated email, please do not reply.</p>
+
+						</td>
+					</tr>
+				</table>
+			</center>
+		</td>
+	</tr>
+</table>

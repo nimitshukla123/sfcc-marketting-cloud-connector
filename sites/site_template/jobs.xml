@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobs xmlns="http://www.demandware.com/xml/impex/jobs/2015-07-01">
+    <job job-id="MCC-CompileMappingTemplates" priority="0">
+        <description/>
+        <parameters/>
+        <flow>
+            <context site-id="SiteGenesis"/>
+            <step step-id="mcc-compile-datafeed-templates" type="custom.MCC-CompileMappingTemplates" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="ObjectType">DataFeeds</parameter>
+                </parameters>
+            </step>
+            <step step-id="mcc-compile-trigger-templates" type="custom.MCC-CompileMappingTemplates" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="ObjectType">Triggers</parameter>
+                </parameters>
+            </step>
+            <step step-id="mcc-compile-analytic-templates" type="custom.MCC-CompileMappingTemplates" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="ObjectType">Analytics</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2017-10-03Z</date>
+                <time>05:03:15.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="MCC-Feed-Catalog" priority="0">
+        <description/>
+        <parameters/>
+        <flow>
+            <context site-id="SiteGenesis"/>
+            <step step-id="mcc-feed-exportCatalog" type="custom.MCC-Feed-ExportCatalog" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="ExportID">catalogFeed</parameter>
+                    <parameter name="ExportFileName">catalogFeed.psv</parameter>
+                    <parameter name="Delimiter">|</parameter>
+                    <parameter name="IncrementalExport">false</parameter>
+                </parameters>
+            </step>
+            <step step-id="mcc-feed-uploadcatalog" type="custom.MCC-Feed-UploadCatalog" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="SFTPServiceID">marketingcloud.sftp</parameter>
+                    <parameter name="ExportFileName">catalogFeed.psv</parameter>
+                    <parameter name="TargetPath">/Import/</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <triggers>
+            <run-once enabled="false">
+                <date>2017-05-30Z</date>
+                <time>20:17:25.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="MCC-Feed-Content" priority="0">
+        <description/>
+        <parameters/>
+        <flow>
+            <context site-id="SiteGenesis"/>
+            <step step-id="mcc-feed-exportContent" type="custom.MCC-Feed-ExportContent" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="ExportID">contentFeed</parameter>
+                    <parameter name="ExportFileName">contentFeed.psv</parameter>
+                    <parameter name="Delimiter">|</parameter>
+                    <parameter name="IncrementalExport">false</parameter>
+                </parameters>
+            </step>
+            <step step-id="mcc-feed-uploadcontent" type="custom.MCC-Feed-UploadContent" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="SFTPServiceID">marketingcloud.sftp</parameter>
+                    <parameter name="ExportFileName">contentFeed.psv</parameter>
+                    <parameter name="TargetPath">/Import/</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2017-05-30Z</date>
+                <time>20:17:25.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="MCC-Feed-Customers" priority="0">
+        <description/>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="SiteGenesis"/>
+                <template-ref template-id="template_77"/>
+            </flow>
+            <flow-template template-id="template_77">
+                <step step-id="mcc-feed-exportcustomers" type="custom.MCC-Feed-ExportCustomers" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExportID">customersFeed</parameter>
+                        <parameter name="ExportFileName">customersFeed.psv</parameter>
+                        <parameter name="Delimiter">|</parameter>
+                        <parameter name="IncrementalExport">false</parameter>
+                    </parameters>
+                </step>
+                <step step-id="mcc-feed-uploadcustomers" type="custom.MCC-Feed-UploadCustomers" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="SFTPServiceID">marketingcloud.sftp</parameter>
+                        <parameter name="ExportFileName">customersFeed.psv</parameter>
+                        <parameter name="TargetPath">/Import/</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2017-06-19Z</date>
+                <time>15:41:10.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="MCC-Feed-Orders" priority="0">
+        <description/>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="SiteGenesis"/>
+                <template-ref template-id="template_59"/>
+            </flow>
+            <flow-template template-id="template_59">
+                <step step-id="mcc-feed-exportorders" type="custom.MCC-Feed-ExportOrders" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExportID">ordersFeed</parameter>
+                        <parameter name="ExportFileName">ordersFeed.psv</parameter>
+                        <parameter name="Delimiter">|</parameter>
+                        <parameter name="IncrementalExport">false</parameter>
+                    </parameters>
+                </step>
+                <step step-id="mcc-feed-uploadorders" type="custom.MCC-Feed-UploadOrders" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="SFTPServiceID">marketingcloud.sftp</parameter>
+                        <parameter name="ExportFileName">ordersFeed.psv</parameter>
+                        <parameter name="TargetPath">/Import/</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2017-06-19Z</date>
+                <time>15:37:40.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="MCC-Feed-Promotions" priority="0">
+        <description/>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="SiteGenesis"/>
+                <template-ref template-id="template_59"/>
+            </flow>
+            <flow-template template-id="template_59">
+                <step step-id="mcc-feed-exportpromotions" type="custom.MCC-Feed-ExportPromotions" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="ExportID">promotionsFeed</parameter>
+                        <parameter name="ExportFileName">promotionsFeed.psv</parameter>
+                        <parameter name="Delimiter">|</parameter>
+                        <parameter name="IncrementalExport">false</parameter>
+                    </parameters>
+                </step>
+                <step step-id="mcc-feed-uploadpromotions" type="custom.MCC-Feed-UploadPromotions" enforce-restart="false">
+                    <description/>
+                    <parameters>
+                        <parameter name="SFTPServiceID">marketingcloud.sftp</parameter>
+                        <parameter name="ExportFileName">promotionsFeed.psv</parameter>
+                        <parameter name="TargetPath">/Import/</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2017-06-19Z</date>
+                <time>15:37:40.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="MCC-InitTriggers" priority="0">
+        <description>For developer use, used to recreate trigger configurations</description>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="SiteGenesis"/>
+                <template-ref template-id="template_72"/>
+            </flow>
+            <flow-template template-id="template_72">
+                <step step-id="mcc-init-triggers" type="custom.MCC-InitTriggers" enforce-restart="false">
+                    <description/>
+                    <parameters/>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2017-06-19Z</date>
+                <time>08:16:12.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+</jobs>

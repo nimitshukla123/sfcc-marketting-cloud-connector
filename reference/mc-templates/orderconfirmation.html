@@ -1,0 +1,276 @@
+%%[
+var @storename, @storedisplayurl, @storelogo, @storehomepage
+var @storeaddress, @storelocation, @storephone
+var @confthankyou, @confmessage, @confcontact
+var @orderxml, @orderdate, @ordernumber, @order
+var @orderTotalSubtotal, @orderTotalTax, @orderTotalGross
+SET @storename = "Salesforce Commerce Cloud SiteGenesis"
+SET @storedisplayurl = "salesforce.com"
+SET @storelogo = "http://www.demandware.com/img/logos/img-demandware-logo.svg"
+SET @storelink = "http://www.salesforce.com/"
+SET @storeaddress = "5 Wall Street"
+SET @storelocation = "Burlington, MA 01803"
+SET @storephone = "Phone: +1.800.555.0199"
+SET @confthankyou = "Thank you for your order."
+SET @confmessage = "If you have questions about your order, we're happy to take your call"
+SET @confcontact = "1 (800) 555-0199, Monday - Friday 8AM - 8PM"
+SET @orderxml = AttributeValue("OrderAsXML")
+
+SET @bAddrId = BuildRowSetFromXML(@orderxml, "/order/customer/billing-address/id", 0)
+SET @bAddrId = Iif(RowCount(@bAddrId), Field(Row(@bAddrId, 1), "Value"), "")
+SET @bAddrFirst = Field(Row(BuildRowSetFromXML(@orderxml, "/order/customer/billing-address/first-name", 0), 1), "Value")
+SET @bAddrLast = Field(Row(BuildRowSetFromXML(@orderxml, "/order/customer/billing-address/last-name", 0), 1), "Value")
+SET @bAddr1 = Field(Row(BuildRowSetFromXML(@orderxml, "/order/customer/billing-address/address1", 0), 1), "Value")
+SET @bAddr2 = BuildRowSetFromXML(@orderxml, "/order/customer/billing-address/address2", 0)
+SET @bAddr2 = Iif(RowCount(@bAddr2), Field(Row(@bAddr2, 1), "Value"), "")
+SET @bAddrCity = BuildRowSetFromXML(@orderxml, "/order/customer/billing-address/city", 0)
+SET @bAddrCity = Iif(RowCount(@bAddrCity), Field(Row(@bAddrCity, 1), "Value"), "")
+SET @bAddrPostal = Field(Row(BuildRowSetFromXML(@orderxml, "/order/customer/billing-address/postal-code", 0), 1), "Value")
+SET @bAddrState = Field(Row(BuildRowSetFromXML(@orderxml, "/order/customer/billing-address/state-code", 0), 1), "Value")
+SET @bAddrCountry = Field(Row(BuildRowSetFromXML(@orderxml, "/order/customer/billing-address/country-code", 0), 1), "Value")
+SET @bAddrPhone = BuildRowSetFromXML(@orderxml, "/order/customer/billing-address/phone", 0)
+SET @bAddrPhone = Iif(RowCount(@bAddrPhone), Field(Row(@bAddrPhone, 1), "Value"), "")
+SET @paymentRows = BuildRowSetFromXML(@orderxml, "/order/payments/payment", 0)
+SET @shipmentRows = BuildRowSetFromXML(@orderxml, "/order/shipments/shipment", 0)
+SET @productRows = BuildRowSetFromXML(@orderxml, "/order/product-lineitems/product-lineitem", 0)
+SET @merchTotalRow = BuildRowSetFromXML(@orderxml, "/order/totals/merchandize-total", 0)
+SET @adjMerchTotalRow = BuildRowSetFromXML(@orderxml, "/order/totals/adjusted-merchandize-total", 0)
+SET @shippingTotalRow = BuildRowSetFromXML(@orderxml, "/order/totals/shipping-total", 0)
+SET @adjShippingTotalRow = BuildRowSetFromXML(@orderxml, "/order/totals/adjusted-shipping-total", 0)
+SET @orderTotalRow = BuildRowSetFromXML(@orderxml, "/order/totals/order-total", 0)
+SET @ordernumber = Field(Row(BuildRowSetFromXML(@orderxml, "/order/original-order-no", 0), 1), "Value")
+
+SET @orderTotalSubtotal = Field(Row(BuildRowSetFromXML(@orderxml, "/order/totals/adjusted-merchandize-total/net-price", 0), 1), "Value")
+SET @orderTotalTax = Field(Row(BuildRowSetFromXML(@orderxml, "/order/totals/order-total/tax", 0), 1), "Value")
+SET @orderTotalGross = Field(Row(BuildRowSetFromXML(@orderxml, "/order/totals/order-total/gross-price", 0), 1), "Value")
+SET @shippingTotalGross = Field(Row(BuildRowSetFromXML(@orderxml, "/order/totals/shipping-total/gross-price", 0), 1), "Value")
+SET @orderdate = Format(Field(Row(BuildRowSetFromXML(@orderxml, "/order/order-date", 0), 1), "Value"), "MMMM d, yyyy")
+
+SET @locale = Field(Row(BuildRowSetFromXML(@orderxml, "/order/customer-locale", 0), 1), "Value")
+
+if empty(@locale) then
+SET @locale = "en_US"
+endif
+]%%
+<div class="main-content" style="font-size:12px; font-family:arial; width:680px;">
+    <table class="store-info-content" style="width:100%;">
+        <tr>
+            <td style="padding:5px 10px;vertical-align:top;">
+                <a href="%%=v(@storelink)=%%" title="%%=v(@storename)=%%">
+                    <img src="%%=v(@storelogo)=%%" alt="%%=v(@storename)=%%" style="border:none;">
+                </a>
+            </td>
+            <td style="padding:5px 10px;vertical-align:top;">
+                <strong>%%=v(@storename)=%%</strong>
+                <br>%%=v(@storeaddress)=%%
+                <br>%%=v(@storelocation)=%%
+                <br>
+                <a href="%%=v(@storelink)=%%" title="Go to Our Store">%%=v(@storedisplayurl)=%%</a>
+                <br>%%=v(@storephone)=%%
+            </td>
+        </tr>
+    </table>
+    <table class="store-message-content" style="width:100%; border-bottom: 1px solid #999999">
+        <tr>
+            <td colspan="2" style="padding:10px 10px 5px;vertical-align:top;">
+                <h2>%%=v(@confthankyou)=%%</h2>
+                <p>%%=v(@confmessage)=%% %%=v(@confcontact)=%%</p>
+            </td>
+        </tr>
+    </table>
+    <table style="width:100%;">
+        <tr>
+            <td style="padding:10px 0;vertical-align:top;" colspan="2">
+                <div style="padding: 0 10px;">
+                    <h2>Order Number: %%=v(@ordernumber)=%%</h2>
+                    <p>Order Placed: %%=v(@orderdate)=%%</p>
+                </div>
+                <table style="width:100%">
+                    <tr>
+                        <th style="background:#cccccc;padding:5px 20px;" colspan="2">Payment Information</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;vertical-align:top;">
+                            <strong>Billing Address</strong>
+                            %%[ if not empty(@bAddrId) then ]%%
+                            <div class="mini-address-title">%%=v(@bAddrId)=%%</div>
+                            %%[ endif ]%%
+                            <!-- First and Last Names -->
+                            <div class="mini-address-name">%%=v(@bAddrFirst)=%% %%=v(@bAddrLast)=%%</div>
+                            <div class="mini-address-location">
+                                <!-- Address 1 and Address 2 -->
+                                %%=v(@bAddr1)=%%
+                                %%[ if not empty(@bAddr2) then ]%%
+                                <br>%%=v(@bAddr2)=%%
+                                %%[ endif ]%%
+                                <!-- City, StateCode, and Zip -->
+                                %%[ if not empty(@bAddrCity) then ]%%
+                                <br>%%=v(@bAddrCity)=%%
+                                %%[ endif ]%%
+                                %%=v(@bAddrState)=%%
+                                %%=v(@bAddrPostal)=%%
+                                <br>
+                                <!-- Country Name -->
+                                %%=v(@bAddrCountry)=%%
+                                <!-- Phone Number -->
+                                %%[ if not empty(@bAddrPhone) then ]%%
+                                <br>%%=v(@bAddrPhone)=%%
+                                %%[ endif ]%%
+                            </div>
+                            <div>
+                                %%[ if RowCount(@paymentRows) == 1 then ]%%
+                                <strong>Payment Method</strong>
+                                %%[ else ]%%
+                                <strong>Payment Methods</strong>
+                                %%[ endif ]%%
+                                <!-- Render All Payment Instruments -->
+                                %%[ for @i = 1 to RowCount(@paymentRows) do
+                                SET @payXML = Concat( "<payment>", Field(Row(@paymentRows, @i), "XML"), "</payment>")
+                                SET @payId = Trim(Field(Row(BuildRowSetFromXML(@payXML, "/payment/processor-id", 0), 1), "Value"))
+                                SET @payAmount = FormatCurrency(Field(Row(BuildRowSetFromXML(@payXML, "/payment/amount", 0), 1), "Value"))
+                                if @payId == "BASIC_CREDIT" then
+                                SET @payName = "Credit Card"
+                                SET @payDisplay = Field(Row(BuildRowSetFromXML(@payXML, "/payment/credit-card/card-type", 0), 1), "Value")
+                                SET @payDisplay = Concat(@payDisplay, ": ")
+                                SET @payDisplay = Concat(@payDisplay, Field(Row(BuildRowSetFromXML(@payXML, "/payment/credit-card/card-number", 0), 1), "Value"))
+                                endif
+                                if @payId == "METHOD_GIFT_CERTIFICATE" then
+                                SET @payName = "Gift Card"
+                                SET @payDisplay = Field(Row(BuildRowSetFromXML(@payXML, "/payment/gift-card/code", 0), 1), "Value")
+                                endif
+                                ]%%
+                                <div>%%=v(@payName)=%%</div>
+                                %%=v(@payDisplay)=%%
+                                <div>
+                                    <span class="label">Amount: </span>
+                                    <span class="value">$%%=v(@payAmount)=%%</span>
+                                </div>
+                                %%[ next @i ]%%
+                            </div>
+                        </td>
+                        <td style="padding: 10px;vertical-align:top;">
+                            <strong>Payment Total</strong><br>
+                            <strong>Subtotal:</strong> $%%=v(@orderTotalSubtotal)=%% <br>
+                            <strong>Shipping:</strong> $%%=v(@shippingTotalGross)=%% <br>
+                            <strong>Tax:</strong> $%%=v(@orderTotalTax)=%% <br>
+                            <strong>Order Total:</strong> $%%=v(@orderTotalGross)=%%
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table style="width:100%">
+        <tr>
+            <th style="background:#cccccc;padding:5px 20px;" colspan="2">Shipment Information</th>
+        </tr>
+        <tr>
+            <td style="padding: 10px 20px 5px;">
+                <!-- render a box for each shipment -->
+                %%[ for @x = 1 to RowCount(@shipmentRows) do
+                SET @shipXML = Concat("<shipment>", Field(Row(@shipmentRows, @x), "XML"), "</shipment>")
+                SET @shipNum = Field(Row(@shipmentRows, @x), "Shipment-id_att")
+                SET @shipMethod = Trim(Field(Row(BuildRowSetFromXML(@shipXML, "/shipment/shipping-method", 0), 1), "Value"))
+
+                SET @shipMethodName = Lookup("ShippingMethods",Concat("Label_", @locale),"Method_ID",@shipMethod)
+                SET @shipDescription = Lookup("ShippingMethods",Concat("Description_", @locale),"Method_ID",@shipMethod)
+
+                SET @shipMethodStatus = Trim(Field(Row(BuildRowSetFromXML(@shipXML, "/shipment/status/shipping-status", 0), 1), "Value"))
+                SET @shipMethodStatusName = ""
+
+                if not empty(@shipMethodStatus) then
+                if @shipMethodStatus == "NOT_SHIPPED" then
+                SET @shipMethodStatusName = "Not Shipped"
+                elseif @shipMethodStatus == "SHIPPED" then
+                SET @shipMethodStatusName = "Shipped"
+                endif
+                endif
+
+                if @shipMethod != "005" then
+                SET @sAddrFirst = Trim(Field(Row(BuildRowSetFromXML(@shipXML, "/shipment/shipping-address/first-name", 0), 1), "Value"))
+                SET @sAddrLast = Trim(Field(Row(BuildRowSetFromXML(@shipXML, "/shipment/shipping-address/last-name", 0), 1), "Value"))
+                SET @sAddr1 = Trim(Field(Row(BuildRowSetFromXML(@shipXML, "/shipment/shipping-address/address1", 0), 1), "Value"))
+                SET @sAddr2 = BuildRowSetFromXML(@shipXML, "/shipment/shipping-address/address2", 0)
+                SET @sAddr2 = Iif(RowCount(@sAddr2), Trim(Field(Row(@sAddr2, 1), "Value")), "")
+                SET @sAddrCity = BuildRowSetFromXML(@shipXML, "/shipment/shipping-address/city", 0)
+                SET @sAddrCity = Iif(RowCount(@sAddrCity), Trim(Field(Row(@sAddrCity, 1), "Value")), "")
+                SET @sAddrPostal = Trim(Field(Row(BuildRowSetFromXML(@shipXML, "/shipment/shipping-address/postal-code", 0), 1), "Value"))
+                SET @sAddrState = Trim(Field(Row(BuildRowSetFromXML(@shipXML, "/shipment/shipping-address/state-code", 0), 1), "Value"))
+                SET @sAddrCountry = Trim(Field(Row(BuildRowSetFromXML(@shipXML, "/shipment/shipping-address/country-code", 0), 1), "Value"))
+                SET @sAddrPhone = BuildRowSetFromXML(@shipXML, "/shipment/shipping-address/phone", 0)
+                SET @sAddrPhone = Iif(RowCount(@sAddrPhone), Trim(Field(Row(@sAddrPhone, 1), "Value")), "")
+                endif
+                ]%%
+                <strong style="font-size: 15px;">Shipment No %%=v(@x)=%%</strong>
+                <div class="shipment-content" style="padding: 5px 10px 10px; background-color:#efefef; margin-bottom: 10px;">
+                    <table style="width:100%;" class="shipment-details">
+                        <tr>
+                            <td valign="top">
+                                %%[ if not empty(@shipMethodStatusName) then ]%%
+                                <strong>Shipping Status:</strong><br>
+                                %%=v(@shipMethodStatusName)=%%<br>
+                                %%[ endif ]%%
+                                <strong>Method:</strong><br>
+                                %%=v(@shipMethodName)=%%
+                            </td>
+                            <td valign="top">
+                                <strong>Shipping Address</strong>
+                                <!-- First and Last Names -->
+                                <div class="mini-address-name">%%=v(@sAddrFirst)=%% %%=v(@sAddrLast)=%%</div>
+                                <div class="mini-address-location">
+                                    <!-- Address 1 and Address 2 -->
+                                    %%=v(@sAddr1)=%%
+                                    %%[ if not empty(@sAddr2) then ]%%
+                                    <br>%%=v(@sAddr2)=%%
+                                    %%[ endif ]%%
+                                    <!-- City, StateCode, and Zip -->
+                                    %%[ if not empty(@sAddrCity) then ]%%
+                                    <br>%%=v(@sAddrCity)=%%
+                                    %%[ endif ]%%
+                                    %%=v(@sAddrState)=%%
+                                    %%=v(@sAddrPostal)=%%
+                                    <br>
+                                    <!-- Country Name -->
+                                    %%=v(@sAddrCountry)=%%
+                                    <!-- Phone Number -->
+                                    %%[ if not empty(@sAddrPhone) then ]%%
+                                    <br>%%=v(@sAddrPhone)=%%
+                                    %%[ endif ]%%
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width:100%; border: 1px solid #cccccc; margin-top: 10px;" class="product-details" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <th style="text-align:left; padding: 5px 10px;">Item</th>
+                            <th style="padding: 5px 10px;">Qty</th>
+                            <th style="padding: 5px 10px;">Price</th>
+                        </tr>
+                        %%[ for @j = 1 to RowCount(@productRows) do
+                        SET @productXML = Concat("<product>", Field(Row(@productRows, @j), "XML"), "</product>")
+                        SET @productShipmentId = Trim(Field(Row(BuildRowSetFromXML(@productXML, "product/shipment-id", 0), 1), "Value"))
+
+                        if @shipNum == @productShipmentId then
+                        SET @productName = Trim(Field(Row(BuildRowSetFromXML(@productXML, "/product/product-name", 0), 1), "Value"))
+                        SET @productId = Trim(Field(Row(BuildRowSetFromXML(@productXML, "/product/product-id", 0), 1), "Value"))
+                        SET @productQty = Trim(Field(Row(BuildRowSetFromXML(@productXML, "/product/quantity", 0), 1), "Value"))
+                        SET @productPrice = Trim(Field(Row(BuildRowSetFromXML(@productXML, "/product/net-price", 0), 1), "Value"))
+                        SET @rowColor = Iif(Mod(@j,2) == 0, "#efefef", "#ffffff")
+                        ]%%
+                        <tr style="background-color:%%=v(@rowColor)=%%;">
+                            <td style="padding: 3px 10px;">
+                                <span style="font-size: 13px;">%%=v(@productName)=%%</span>
+                                <br><span style="color: #333333;">Item No. %%=v(@productId)=%%</span>
+                            </td>
+                            <td style="text-align: right; padding: 3px 0;">%%=v(@productQty)=%%</td>
+                            <td style="text-align: right; padding: 3px 10px 3px 0;">$%%=v(@productPrice)=%%</td>
+                        </tr>
+                        %%[ endif ]%%
+                        %%[ next @j ]%%
+                    </table>
+                </div>
+                %%[ next @x ]%%
+            </td>
+        </tr>
+    </table>
+</div>

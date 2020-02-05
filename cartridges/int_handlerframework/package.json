@@ -1,0 +1,4 @@
+{
+  "main": "./cartridge/scripts/main.js",
+  "hooks": "./hooks.json"
+}

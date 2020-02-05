@@ -1,0 +1,53 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="${pdict.DecoratorTemplate}">
+    <isslot id="mcsubscription-banner" description="Banner for Marketing Cloud Subscribe/Unsubscribe forms" context="global" />
+
+    <div class="container">
+        <h1>${Resource.msg('mcsubscribe.signup','forms',null)}</h1>
+
+        <isif condition="${pdict.formSubmitted}">
+            <isif condition="${pdict.subscribed}">
+                ${Resource.msg('mcsubscribe.subscribed','forms',null)}
+            <iselse/>
+                ${Resource.msg('mcsubscribe.unsubscribed','forms',null)}
+            </isif>
+        <iselse/>
+            <form action="${URLUtils.httpsContinue()}" method="post" class="form-horizontal" id="MCSubscriptionForm">
+
+                <fieldset>
+
+                    <div class="form-row <isif condition="${pdict.CurrentForms.mcsubscribe.email.mandatory === true}">required</isif>">
+                        <label class="form-control-label" for="${pdict.CurrentForms.mcsubscribe.email.htmlName}">
+                            <isif condition="${pdict.CurrentForms.mcsubscribe.email.mandatory === true}">
+                                <span class="required-indicator">• </span>
+                            </isif>
+                            <isprint value="${Resource.msg(pdict.CurrentForms.mcsubscribe.email.label, 'forms', null)}" encoding="htmlcontent" />
+                        </label>
+                        <div class="field-wrapper">
+                            <input type="text" class="input-text <isif condition="${pdict.CurrentForms.mcsubscribe.email.mandatory === true}">required</isif>"
+                            id="${pdict.CurrentForms.mcsubscribe.email.htmlName}" name="${pdict.CurrentForms.mcsubscribe.email.htmlName}"
+                            value="<isprint value="${pdict.CurrentForms.mcsubscribe.email.htmlValue}" encoding="htmldoublequote"/>" >
+                        </div>
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="form-row form-row-button">
+                        <isif condition="${pdict.formAction === 'subscribe' || pdict.formAction === 'subscribeFooter'}">
+                            <button type="submit" value="${Resource.msg('mcsubscribe.subscribe','forms',null)}" name="${pdict.CurrentForms.mcsubscribe[pdict.formAction].htmlName}">
+                                ${Resource.msg('mcsubscribe.subscribe','forms',null)}
+                            </button>
+                        <iselse/>
+                            <button type="submit" value="${Resource.msg('mcsubscribe.unsubscribe','forms',null)}" name="${pdict.CurrentForms.mcsubscribe[pdict.formAction].htmlName}">
+                                ${Resource.msg('mcsubscribe.unsubscribe','forms',null)}
+                            </button>
+                        </isif>
+                    </div>
+
+                    <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+
+                </fieldset>
+
+            </form>
+        </isif>
+    </div>
+</isdecorate>

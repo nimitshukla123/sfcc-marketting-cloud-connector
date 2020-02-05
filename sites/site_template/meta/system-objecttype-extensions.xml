@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <type-extension type-id="SitePreferences">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="mcEnableAnalytics">
+                <display-name xml:lang="x-default">Marketing Cloud Enable Analytics</display-name>
+                <description xml:lang="x-default">Select Yes to enable Marketing Cloud Analytics tracking. Requires Member ID to be set.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="mcMID">
+                <display-name xml:lang="x-default">Marketing Cloud Member ID</display-name>
+                <description xml:lang="x-default">Marketing Cloud Business Unit Member ID aka MID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <regex>[\d\w.-]+</regex>
+            </attribute-definition>
+            <attribute-definition attribute-id="mcIncludeTrackingLink">
+                <display-name xml:lang="x-default">Marketing Cloud Include Tracking Link</display-name>
+                <description xml:lang="x-default">Select Yes to output Marketing Cloud Analytics tracking link into the storefront. Requires Member ID to be set.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="mcCollectJsUrl">
+                <display-name xml:lang="x-default">Marketing Cloud collect.js URL</display-name>
+                <description xml:lang="x-default">Marketing Cloud collect.js URL. The string MCMID must exist in the URL, for the marketing cloud MID to be inserted into the URL.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <regex>^(?:https?:)?//(?:.*MCMID.*)$</regex>
+                <default-value>//MCMID.collect.igodigital.com/collect.js</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="mcEnableMailingLists">
+                <display-name xml:lang="x-default">Marketing Cloud Enable Mailing List Hooks</display-name>
+                <description xml:lang="x-default">Select Yes to enable Marketing Cloud mailing list functionality.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="mcDefaultMailingLists">
+                <display-name xml:lang="x-default">Marketing Cloud Default Mailing Lists</display-name>
+                <description xml:lang="x-default">Default Marketing Cloud mailing lists to assign when customer subscribes. Please provide the numeric "List ID" value.</description>
+                <type>set-of-int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="mcMailingListsWhitelist">
+                <display-name xml:lang="x-default">Marketing Cloud Mailing Lists Whitelist</display-name>
+                <description xml:lang="x-default">Whitelist of Marketing Cloud mailing lists. If left empty, all lists are listed for customer. Please provide the numeric "List ID" value.</description>
+                <type>set-of-int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+			<attribute-definition attribute-id="mcUnsubscribeAllowed">
+                <display-name xml:lang="x-default">Marketing Cloud Allow Unsubscribing from Lists over Deletion</display-name>
+                <description xml:lang="x-default">This flag will allow the Marketing Cloud cartridge to Unsubscribe users from assigned mailing lists, thus updating the subscriber's status from "Active" to "Unsubscribed".&#13;
+This will be used in place of fully deleting the record from the list.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="Marketing Cloud">
+                <display-name xml:lang="x-default">Marketing Cloud Connector</display-name>
+                <attribute attribute-id="mcEnableAnalytics"/>
+                <attribute attribute-id="mcMID"/>
+                <attribute attribute-id="mcIncludeTrackingLink"/>
+                <attribute attribute-id="mcCollectJsUrl"/>
+                <attribute attribute-id="mcEnableMailingLists"/>
+                <attribute attribute-id="mcDefaultMailingLists"/>
+                <attribute attribute-id="mcMailingListsWhitelist"/>
+				<attribute attribute-id="mcUnsubscribeAllowed"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+</metadata>

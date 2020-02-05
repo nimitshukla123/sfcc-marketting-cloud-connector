@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+    <list formid="lists">
+        <field formid="listID" type="integer" binding="ID" />
+        <field formid="enabled" type="boolean" />
+    </list>
+
+    <action formid="save" valid-form="true"/>
+</form>

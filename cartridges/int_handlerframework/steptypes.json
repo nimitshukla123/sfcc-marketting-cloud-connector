@@ -1,0 +1,37 @@
+{
+    "step-types": {
+        "script-module-step": [
+            {
+                "@type-id": "custom.CommunicationHandlers-Init",
+                "@supports-parallel-execution": "false",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "false",
+                "description": "Communication Handlers Init, useful for developer to recreate communication handler configurations",
+                "module": "int_handlerframework/cartridge/scripts/communication/init.js",
+                "function": "initCommHandlers",
+                "transactional": "true",
+                "timeout-in-seconds": "900",
+                "parameters": {
+                    "parameter": [
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when the step failed with an error."
+                        },
+                        {
+                            "@code": "FINISHED",
+                            "description": "Used when the step finished successfully."
+                        },
+                        {
+                            "@code": "FINISHED_WITH_WARNINGS",
+                            "description": "Used when the step finished with warnings."
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

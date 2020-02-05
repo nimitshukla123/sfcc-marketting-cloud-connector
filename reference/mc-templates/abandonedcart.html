@@ -1,0 +1,439 @@
+<html> 
+  <head> 
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" /> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+    <style type="text/css"> .ReadMsgBody {
+      width: 100%;
+    }
+      .ExternalClass {
+        width: 100%;
+      }
+      div, p, a, li, td {
+        -webkit-text-size-adjust:none;
+      }
+      body {
+        -webkit-text-size-adjust:100%;
+        -ms-text-size-adjust:100%;
+        margin:0 !important;
+        padding:0 !important;
+      }
+      table td {
+        border-collapse: collapse;
+      }
+      img {
+        outline:0;
+      }
+      a img {
+        border:none;
+      }
+      @media screen and (max-width: 480px) {
+        td[class="headercell-phone"] {
+          display:none;
+        }
+        table[class="container"] {
+          width:360px !important;
+        }
+        table[class="hero"] {
+          width:100% !important;
+        }
+        table[class="full-width"], td[class="full-width"] {
+          width:100% !important;
+          float:left !important;
+          padding:10px 15px 10px 15px !important;
+        }
+        table[class="full-width-hero-content"], td[class="full-width-hero-content"] {
+          width:90% !important;
+          float:left !important;
+          padding: 0 5% 0 5% !important;
+          display: block !important;
+        }
+        table[class="full-width-hero-image"], td[class="full-width-hero-image"] {
+          float:left !important;
+          display: block !important;
+        }
+        img[class="photo"] {
+          width:100% !important;
+          height:auto !important;
+          display: block;
+        }
+        td[id="preheader"]{
+          width:auto !important;
+        }
+        td[class="row"]{
+          width:100% !important;
+        }
+        td[class="hide"] {
+          display:none !important;
+        }
+        td[class="headercell-phone"] {
+          display:inline !important;
+        }
+        td[class="headercell-desktop"] img {
+          display: none !important;
+        }
+        span[class="center-text"]{
+          text-align:center !important;
+        }
+        a[class="product"]{
+          text-decoration: none;
+          color: #4f4f4f;
+        }
+        a:hover[class="product"]{
+          color: #337ab7;
+        }
+      }
+    </style> 
+  </head> 
+  <body bgcolor="#e8e8e8"> 
+    
+    %%[ 
+    
+    /*
+      Set @CartId = "cd19ef797671d33adf1005de25"
+      Set @ConsumerId = "abLrfak10dRcMGcGyL5idcnvHY"
+    */
+    
+      Set @basketItems = RetrieveSalesforceObjects(
+         "retPoc__ccecombasketproductitem__x", 
+         "retPoc__product_id__c, retPoc__item_text__c, retPoc__price_after_item_discount__c, retPoc__quantity__c", 
+         "retPoc__basket_id__c", 
+         "=", 
+         cartId)
+    
+    Set @recommendedItems = RetrieveSalesforceObjects(
+         "retPoc__ccecomrecommendation__x", 
+         "retPoc__image_url__c, retPoc__product_name__c, retPoc__product_url__c", 
+         "retPoc__customer_id__c", 
+         "=", 
+         consumerId)
+    ]%%
+
+    <!-- ============================== --> 
+    <!-- Flexible Branding Template --> 
+    <!-- ============================== --> 
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#e8e8e8"> 
+      <tr> 
+        <td> 
+          <!-- ============================== --> 
+          <!-- White background wrapper --> 
+          <!-- ============================== --> 
+          <table class="container" bgcolor="#ffffff" width="600" align="center" border="0" cellspacing="0" cellpadding="0" style="background-color:#ffffff !important;"> 
+            <tr> 
+              <td> 
+                <!-- ============================== --> 
+                <!-- Logo and Preheader --> 
+                <!-- ============================== --> 
+                <table class="container" bgcolor="#6ccdf0" style="padding: 20px 0 0 0;" width="600" align="center" border="0" cellspacing="0" cellpadding="0"> 
+                  <tr> 
+                    <td width="195" style="padding:0 15px 15px 0px;"> 
+                      <center>
+                        <a href="http://ntoutfitters.com" alias="NTO Logo" style="outline:none"><img src="https://s3-us-west-2.amazonaws.com/rd-industry-emails/retail/nto/brand-assets/email-templates/branding-nto-logo-white.png"></a>
+                      </center> 
+                    </td> 
+                    <td class="hide" width="225" style="font-family:Gotham, Helvetica, Arial, sans-serif; color:#ffffff; font-size:13px; line-height:12px; text-align:right; padding:0 25px 0 0;"> 
+                      <!-- CONTENT AREA -->
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                        <tbody>
+                          <tr>
+                            <td style="font-family: Gotham,Helvetica,Arial,sans-serif; color: #ffffff; font-size: 13px; line-height: 12px; text-align: right;">
+                              You have items in your shopping cart...
+                              <br />
+                              <a alias="View as a Web Page" class="view_link" style="color: #393939; text-decoration: none; font-size: 11px; line-height: 24px;" target="_blank" href="%%view_email_url%%">WEB VERSION</a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table> 
+                      <!-- END CONTENT AREA --> 
+                    </td> 
+                  </tr> 
+                </table> 
+                <!-- ============================== --> 
+                <!-- Hero Image --> 
+                <!-- ============================== --> 
+                <table class="container" width="600" align="center" border="0" cellspacing="0" cellpadding="0"> 
+                  <tr> 
+                    <td style="font-family:Gotham, Helvetica, Arial, sans-serif; color:#4f4f4f; font-size:16px; line-height:22px; padding:0 0 25px 0;"> 
+                      <!-- CONTENT AREA --> 
+                      <img src="https://s3-us-west-2.amazonaws.com/rd-industry-emails/retail/nto/campaign-toolkits/abandoned-cart/abandoned-cart-high-value/abandoned-cart-high-value-hero.png" class="photo" /> 
+                      <!-- END CONTENT AREA --> 
+                    </td> 
+                  </tr> 
+                </table> 
+                <!-- ============================== --> 
+                <!-- Section --> 
+                <!-- ============================== --> 
+                <table class="container" width="600" align="center" border="0" cellspacing="0" cellpadding="0"> 
+                  <tr> 
+                    <td style="font-family:Gotham, Helvetica, Arial, sans-serif; color:#4f4f4f; font-size:16px; line-height:22px; padding:0 25px 0 25px;"> 
+                      <!-- CONTENT AREA --> 
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                        <tbody>
+                          <tr>
+                            <td style="font-family: Gotham,Helvetica,Arial,sans-serif; color: #6d6d6d; text-align: center; font-size: 16px; line-height: 22px;">
+                              <br /><span style="font-weight: bold;">Hello %%firstName%%</span>,
+                              <br /> <br/>
+                              It looks like you left something in your NTO shopping cart that is waiting for your return! Go back to your cart to complete your purchase before it's too late &ndash; these items are going fast.
+                              <br />
+                              <!-- ============================== -->
+                              <!-- Blue CTA BTN -->
+                              <!-- ============================== -->
+                              <table class="full-width">
+                                <tbody>
+                                  <tr>
+                                    <td width="190" class="hide">
+                                    </td>
+                                    <td width="220" class="full-width" style="font-family: Gotham,Helvetica,Arial,sans-serif; padding: 20px 0px;">
+                                      <a href="" class="high_click" target="_blank" alias="Return to Cart" style="font-family: Gotham,Helvetica,Arial,sans-serif; color: #ffffff; text-decoration: none;"><span style="display: block; color: #ffffff; text-align: center; padding: 10px 0px; border-radius: 20px; background-color: #6ccdf0;">Return to Cart</span></a>
+                                    </td>
+                                    <td width="190" class="hide">
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="font-family: Gotham,Helvetica,Arial,sans-serif; color: #8f8f8f; text-align: center; font-size: 11px; line-height: 15px; padding: 0px 50px 15px;">
+                              <span style="font-size: 11px; color: #0f80b3; font-weight: bold; line-height: 18px;">Need help?</span> Our NTO experts are available 24/7 to assist you. Give us a call at 555.212.3698 or tweet your question to @NTOutfitters.
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>   
+                      <!-- END CONTENT AREA --> 
+                    </td> 
+                  </tr> 
+                </table> 
+                <!-- ============================== --> 
+                <!-- Section --> 
+                <!-- ============================== --> 
+                <table class="container" width="600" align="center" border="0" cellspacing="0" cellpadding="0"> 
+                  <tr> 
+                    <td style="font-family:Gotham, Helvetica, Arial, sans-serif; color:#4f4f4f; font-size:16px; line-height:22px; padding:0 25px 0 25px;"> 
+                      <!-- CONTENT AREA --> 
+                      <table border="0" cellspacing="0" cellpadding="0" width="100%" > 
+                        <tbody> 
+                          <tr> 
+                            <td style="font-family: Gotham, Helvetica, Arial, sans-serif; color: #6d6d6d; text-align: center; font-size: 14px; line-height: 22px;"> 
+                              <table class="full-width"> 
+                                <tbody> 
+                                  <tr> 
+                                    <td class="hide" width="210"> 
+                                    </td> 
+                                    <td class="full-width" width="180" style="padding: 30px 0px 0px 25px;"> 
+                                      <span style="font-family: Gotham, Helvetica, Arial, sans-serif; display: block; color: #6d6d6d; text-align: center; padding: 7px 0px; border: 1px solid #d1d1d1; text-transform: uppercase; background-color: #ffffff;">Saved Items</span> 
+                                    </td> 
+                                    <td class="hide" width="210"> 
+                                    </td> 
+                                  </tr> 
+                                </tbody> 
+                              </table> 
+                            </td> 
+                          </tr> 
+                        </tbody> 
+                      </table> 
+                      <table class="container" width="600" align="center" border="0" cellspacing="0" cellpadding="0"> 
+                        <tr> 
+                          <td style="font-family:Gotham, Helvetica, Arial, sans-serif; color:#4f4f4f; font-size:16px; line-height:22px; padding:0 25px 0 25px;"> 
+                            <!-- CONTENT AREA --> 
+                            <table border="0" cellspacing="0" cellpadding="0" width="100%"> 
+                              <tbody> 
+                                
+                              %%[ 
+                                /* Now that we've found some data we can do something with it */ 
+                                var @row, @productName, @quantity, @price, @productId 
+                                for @i = 1 to RowCount(@basketItems) do 
+                                  /* Set the row to the row we're currently looping through */ 
+                                  Set @row = Row(@basketItems,@i) 
+                                  Set @productName = Field(@row, "retPoc__item_text__c") 
+                                  Set @quantity = Field(@row,"retPoc__quantity__c") 
+                                  Set @price = Field(@row,"retPoc__price_after_item_discount__c") 
+                                  Set @productId = Field(@row, "retPoc__product_id__c")
+                              ]%% 
+                                
+                                <tr> 
+                                  <td style="font-family: Gotham, Helvetica, Arial, sans-serif; color: #6d6d6d; text-align: center; font-size: 14px; line-height: 22px;"> 
+                                    <table class="full-width"> 
+                                      <tbody> 
+                                        <tr> 
+                                          <td class="hide" width="210"> 
+                                          </td> 
+                                          <td class="full-width" width="180" style="padding: 30px 0px 25px;"> 
+                                            <a href="http://development-functional03-qa.demandware.net/s/NTO/%%=v(@productId)=%%.html"> <img src="http://development-functional03-qa.demandware.net/on/demandware.static/-/Sites-nto/default/dw4665d1a7/images/medium/%%=v(@productId)=%%.jpg" width="600" class="photo" /></a>
+                                            <br/>
+                                            <table border="0" cellspacing="0" cellpadding="0" align="center">
+                                              <tbody>
+                                                <tr>
+                                                  <td style="font-weight: bold;">%%=v(@productName)=%%
+                                                    <br />
+                                                  </td>
+                                                <tr>
+                                                  <td style="background-color:#e8e8e8; font-size: 12px; padding: 3px;"> 
+                                                    <span style="font-weight: bold; line-height: 18px;">Size:</span> S
+                                                  </td>
+                                                </tr>
+                                                <tr>
+                                                  <td style="font-size: 12px; padding: 3px;">
+                                                    <span style="font-weight: bold; line-height: 18px;">Quantity:</span> %%=v(@quantity)=%%
+                                                  </td>
+                                                </tr>
+                                                <tr>
+                                                  <td style="background-color:#e8e8e8; font-size: 12px; padding: 3px;"> 
+                                                    <span style=" font-weight: bold; line-height: 18px;">Price:</span> $%%=v(@price)=%%
+                                                  </td>
+                                                </tr>
+                                              </tbody>
+                                            </table> 
+                                          </td> 
+                                        </tr> 
+                                      </tbody> 
+                                    </table> 
+                                  </td> 
+                                </tr> 
+                              
+                              %%[NEXT @i]%%
+                                
+                              </tbody> 
+                            </table> 
+                            <table class="full-width">
+                              <tbody>
+                                <tr>
+                                  <td width="190" class="hide">
+                                  </td>
+                                  <td width="220" class="full-width" style="font-family: Gotham,Helvetica,Arial,sans-serif; padding: 20px 0px;">
+                                    <a href="" class="high_click" target="_blank" alias="Complete Purchase" style="font-family: Gotham,Helvetica,Arial,sans-serif; color: #ffffff; text-decoration: none;"><span style="display: block; color: #ffffff; text-align: center; padding: 10px 0px; border-radius: 20px; background-color: #6ccdf0;">Complete Purchase</span></a>
+                                  </td>
+                                  <td width="190" class="hide">
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                            <!-- END CONTENT AREA --> 
+                          </td> 
+                        </tr> 
+                      </table> 
+                      <!-- ============================== --> 
+                      <!-- Section --> 
+                      <!-- ============================== --> 
+                      <table class="container" width="600" align="center" border="0" cellspacing="0" cellpadding="0"> 
+                        <tr> 
+                          <td style="font-family:Gotham, Helvetica, Arial, sans-serif; color:#4f4f4f; font-size:16px; line-height:22px; padding:0 25px 0 25px;"> 
+                            <!-- CONTENT AREA -->
+                            <table border="0" cellspacing="0" cellpadding="0" width="100%" align="center"> 
+                              <tbody> 
+                                <tr> 
+                                  <td style="font-family: Gotham, Helvetica, Arial, sans-serif; color: #6d6d6d; text-align: center; font-size: 14px; line-height: 22px;"> 
+                                    <table class="full-width"> 
+                                      <tbody> 
+                                        <tr> 
+                                          <td class="hide" width="170"> 
+                                          </td> 
+                                          <td class="full-width" width="260" style="padding: 30px 0px 25px;"> 
+                                            <span style="font-family: Gotham, Helvetica, Arial, sans-serif; display: block; color: #6d6d6d; text-align: center; padding: 7px 0px; border: 1px solid #d1d1d1; text-transform: uppercase; background-color: #ffffff;">You Might Also Like</span> 
+                                          </td> 
+                                          <td class="hide" width="170"> 
+                                          </td> 
+                                        </tr> 
+                                      </tbody> 
+                                    </table> 
+                                  </td> 
+                                </tr> 
+                              </tbody> 
+                            </table> 
+                            
+                            <table class="full-width" align="center" padding="0" border="0" cellspacing="0" cellpadding="0">
+                              <tbody>
+                                <tr style="text-align: center; font-size: 11px; line-height: 15px; text-transform:uppercase; font-weight: bold;">
+                                
+                            %%[ 
+                            /* Iterate over product recommendations */ 
+                            Set @recommendedProductsToShow = 3
+                            var @row, @productName, @quantity, @price, @productId 
+                            for @i = 1 to @recommendedProductsToShow do 
+                            /* Set the row to the row we're currently looping through */ 
+                            Set @row = Row(@recommendedItems,@i) 
+                            Set @productName = Field(@row, "retPoc__product_name__c")  
+                            Set @productImgLink = Field(@row,"retPoc__image_url__c") 
+                            Set @productLink = Field(@row,"retPoc__product_url__c")
+                            ]%% 
+ 
+                            
+                            <td style="padding : 10px">
+                              <div>
+                                <a href="%%=v(@productLink)=%%"><img src="%%=v(@productImgLink)=%%" width="110"></a>
+                              </div>
+                              <div style="text-align: center; font-size: 11px; line-height: 15px; text-transform:uppercase; font-weight: bold;">
+                                %%=v(@productName)=%%
+                              </div>
+                            </td>
+
+                            %%[NEXT @i]%%
+                                
+                                </tr>
+                              </tbody>
+                            </table>
+                            
+                      </table> 
+                        <!-- END CONTENT AREA --> 
+                    </td> 
+                  </tr> 
+                </table> 
+                <!-- ============================== -->   
+                <!-- Section --> 
+                <!-- ============================== --> 
+                <table class="container" width="600" align="center" border="0" cellspacing="0" cellpadding="0"> 
+                  <tr> 
+                    <td style="font-family:Gotham, Helvetica, Arial, sans-serif; color:#4f4f4f; font-size:16px; line-height:22px; padding: 25px;"> 
+                      <a href="http://ntoretail.com" target="_blank" alias="NTO Website - Banner Ad" style="outline: none;"><img class="photo" src="https://s3-us-west-2.amazonaws.com/rd-industry-emails/retail/nto/campaign-toolkits/abandoned-cart/cart-saved/free-shipping-over-100-banner-ad.png" /></a>
+                    </td> 
+                  </tr> 
+                </table> 
+              </td> 
+            </tr> 
+          </table> 
+        </td> 
+      </tr> 
+    </table> 
+    <!-- ============================== --> 
+    <!-- Footer --> 
+    <!-- ============================== --> 
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#393939"> 
+      <tr> 
+        <td height="7px" bgcolor="#6ccdf0"> 
+        </td> 
+      </tr> 
+      <tr> 
+        <td style="font-family:Gotham, Helvetica, Arial, sans-serif; text-align:center; color:#a5a5a5; font-size:9px; line-height:10px; padding:0 50px 35px 50px;"> 
+          <a href="http://ntoutfitters.com/" target="_blank" alias="NTO Logo" style="outline:none"><img style="padding:35px 0 25px 0;" src="https://s3-us-west-2.amazonaws.com/rd-industry-emails/retail/nto/brand-assets/email-templates/branding-nto-logo-footer.png"></a>
+          <br> 
+          <span style="display:block;font-weight:bold; font-size:14px;">Northern Trail Outfitters</span>
+          <br>%%Member_Busname%% registered address: 
+          <br />%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%
+          <br /> 
+        </td> 
+      </tr> 
+      <tr> 
+        <td style="font-family:Gotham, Helvetica, Arial, sans-serif; text-align:center; color:#a5a5a5; font-size:12px; font-weight:bold; line-height:16px; padding:0 55px 25px 55px;"> 
+          <a href="http://www.ntoutfitters.com" alias="Contact Us" target="_blank" style="color:#a5a5a5;text-decoration:none;">Contact Us</a> | 
+          <a href="http://www.ntoutfitters.com" alias="Store Locator" target="_blank" style="color:#a5a5a5;text-decoration:none;">Store Locator</a> | 
+          <a href="%%subscription_center_url%%" alias="Manage Subscriptions" target="_blank" style="color:#a5a5a5;text-decoration:none;">Manage Subscriptions</a> | 
+          <a href="%%profile_center_url%%" target="_blank" alias="Profile Center" style="color:#a5a5a5;text-decoration:none;">Update Profile</a> | 
+          <a class="mod_click" target="_blank" href="%%unsub_center_url%%" alias="Unsubscribe" title="Unsubscribe" style="color:#a5a5a5;text-decoration:none;">Unsubscribe</a> 
+          <br> 
+        </td> 
+      </tr> 
+      <tr> 
+        <td style="font-family:Gotham, Helvetica, Arial, sans-serif; text-align:center; color:#a5a5a5; font-size:12px; line-height:14px; padding:0 100px 25px 100px; text-align: center;"> 
+          <a href="https://www.facebook.com/NTOutfitters" alias="NTO Facebook" target="_blank"><img src="https://s3-us-west-2.amazonaws.com/rd-industry-emails/retail/nto/brand-assets/email-templates/branding-social-icon-facebook.png" style="padding:0 10px 0 0;"/></a> 
+          <a href="https://twitter.com/NTOutfitters" alias="NTO Twitter" target="_blank"><img src="https://s3-us-west-2.amazonaws.com/rd-industry-emails/retail/nto/brand-assets/email-templates/branding-social-icon-twitter.png" style="padding:0 10px 0 0;"/></a> 
+          <a href="https://www.pinterest.com/ntoutfitters/" alias="NTO Pinterest" target="_blank"><img src="https://s3-us-west-2.amazonaws.com/rd-industry-emails/retail/nto/brand-assets/email-templates/branding-social-icon-pinterest.png" style="padding:0 10px 0 0;"/></a> 
+          <a href="http://www.ntoutfitters.com" alias="NTO Email" target="_blank"><img src="https://s3-us-west-2.amazonaws.com/rd-industry-emails/retail/nto/brand-assets/email-templates/branding-social-icon-email.png" /></a> 
+        </td> 
+      </tr> 
+    </table> 
+    <div id="tracking_pixel"> 
+      <custom name="opencounter" type="tracking"> 
+        </div> 
+      <div id="campaign_pixel"> 
+      </div> 
+      </body> 
+    </html>

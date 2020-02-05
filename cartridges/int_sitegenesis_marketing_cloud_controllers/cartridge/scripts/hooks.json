@@ -1,0 +1,12 @@
+{
+	"hooks": [
+        {
+            "name": "dw.system.request.onRequest",
+            "script": "./request/OnRequest"
+        },
+        {
+            "name": "app.template.afterFooter",
+            "script": "./template/templateHooks"
+        }
+    ]
+}

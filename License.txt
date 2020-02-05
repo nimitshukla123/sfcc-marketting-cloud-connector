@@ -1,0 +1,21 @@
+MC Connector Terms of Use (FINAL)
+
+
+Copyright 2018 salesforce.com inc. All rights reserved. 
+
+ These Terms of Use are between *You*, (being the Customer that purchased Commerce Cloud Services) and salesforce.com, inc. or its Affiliate (“*SFDC*”) that entered into a subscription agreement (the “*Agreement*”) with You that governs Your purchase of Commerce Cloud Services (formerly known as “Demandware Services”).
+ 
+These Terms of Use were last updated on  June 11, 2018* *and constitute a legally binding agreement between You and SFDC effective upon Your first download, installation or use of the Connector, whichever is earliest. If You do not have authority to bind the Customer that entered into the Agreement or You do not agree to these Terms of Use, You may not install or use the Connector
+ 
+SFDC grants You a limited non-exclusive, non­transferable, non-sublicensable, revocable license to use the Connector internally solely for the purpose of integrating Your subscription to Commerce Cloud Services with Your subscription to SFDC’s Marketing Cloud Services in the manner as described by the Documentation.  
+
+Subject to the limited rights expressly granted hereunder, SFDC reserves all rights, title and interest in and to all intellectual property rights subsisting in the Connector. No rights are granted to You hereunder other than as expressly set forth herein.  Users residing in countries on the United States Office of Foreign Assets Control sanction list, or which are otherwise subject to a US export embargo, may not use the Connector.
+ 
+The Connector is not part of the Commerce Cloud Services nor the Marketing Cloud Services. Implementation of the Connector requires development work and appropriate configuration and permissions within Your instances of Commerce Cloud and Marketing Cloud for which You are responsible. The Connector may contain bugs, errors and incompatibilities with Your configuration of Commerce Cloud Services or Marketing Cloud Services and is made available on an AS IS basis without support, updates, or service level commitments. 
+ 
+SFDC reserves the right at any time to modify or discontinue, temporarily or permanently, the Connector (or any part thereof) with or without notice. You agree that SFDC shall not be liable to You or to any third party for any modification, suspension or discontinuance
+
+WITHOUT LIMITING THE GENERALITY OF THE FOREGOING, THE CONNECTOR IS NOT SUPPORTED, AND IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. IN NO EVENT SHALL  SFDC HAVE ANY LIABILITY FOR ANY DAMAGES, INCLUDING BUT NOT LIMITED TO, DIRECT, INDIRECT, SPECIAL, INCIDENTAL, PUNITIVE, OR CONSEQUENTIAL DAMAGES, OR DAMAGES BASED ON LOST PROFITS, DATA OR USE, IN CONNECTION WITH THE CONNECTOR, HOWEVER CAUSED AND, WHETHER IN CONTRACT, TORT OR UNDER ANY OTHER THEORY OF LIABILITY, WHETHER OR NOT YOU HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+ 
+These Terms of Use shall be governed exclusively by the internal laws of the State of California, without regard to its conflicts of laws rules. Each party hereby consents to the exclusive jurisdiction of the state and federal courts located in San Francisco County,California to adjudicate any dispute arising out of or relating to this Agreement. Except as expressly stated in these Terms of Use, these Terms of Use constitute the entire agreement between the parties, and supersede all prior and contemporaneous agreements, proposals or representations, written or oral, concerning their subject matter.No modification, amendment, or waiver of any provision of these Terms of Use shall be effective unless it is by an update to these Terms of Use that we make available on this website, or is in writing and signed by the party against whom the modification, amendment or waiver is to be asserted.

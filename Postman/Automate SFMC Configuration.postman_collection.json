@@ -1,0 +1,1387 @@
+{
+	"info": {
+		"_postman_id": "9c860b4d-2a41-40d2-9a89-f7d3588c4064",
+		"name": "Automate SFMC Configuration",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Request SFMC Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "dba67127-8fb6-461e-9330-9696e65c9ac8",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"if (data.accessToken) {",
+									"  tests[\"Body has accessToken\"] = true; ",
+									"  postman.setEnvironmentVariable(\"accessToken\", data.accessToken);",
+									"}",
+									"else {",
+									"  tests[\"Body has accessToken\"] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clientId\":\"{{clientId}}\",\n    \"clientSecret\":\"{{clientSecret}}\"\n}"
+						},
+						"url": {
+							"raw": "{{authEndPoint}}/v1/requestToken",
+							"host": [
+								"{{authEndPoint}}"
+							],
+							"path": [
+								"v1",
+								"requestToken"
+							]
+						},
+						"description": "Request SFMC Token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "General",
+			"item": [
+				{
+					"name": "Get Data Extension templates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bb9ea01c-1b5e-4db4-be42-e6dd48c37f84",
+								"exec": [
+									"var xmlTree = xml2Json(responseBody);",
+									"",
+									"",
+									"var myJSONString = JSON.stringify(xmlTree);",
+									"",
+									"var myEscapedJSONString = myJSONString.replace(\"soap:Body\", \"Body\")",
+									"",
+									"var myEscapedJSONString = myEscapedJSONString.replace(\"soap:Envelope\", \"Envelope\");",
+									"",
+									"",
+									"",
+									"var parsedJSON = JSON.parse(myEscapedJSONString);",
+									"",
+									"",
+									"",
+									"/* Loop through results object */",
+									"for (var i in parsedJSON.Envelope.Body.RetrieveResponseMsg.Results) {",
+									"  ",
+									"  if(parsedJSON.Envelope.Body.RetrieveResponseMsg.Results[i].Name === \"TriggeredSendDataExtension\")",
+									"  ",
+									"   postman.setEnvironmentVariable(\"sfmcTrigSendTemplateId\", parsedJSON.Envelope.Body.RetrieveResponseMsg.Results[i].ObjectID);",
+									"  ",
+									"  ",
+									"}",
+									"",
+									"",
+									"/*",
+									"if (data.accessToken) {",
+									"  tests[\"Body has accessToken\"] = true; ",
+									"  postman.setEnvironmentVariable(\"accessToken\", data.accessToken);",
+									"}",
+									"else {",
+									"  tests[\"Body has accessToken\"] = false;",
+									"}",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "text/xml",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Retrieve</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t<RetrieveRequestMsg xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n         <RetrieveRequest>\n            <ObjectType>DataExtensionTemplate</ObjectType>\n            <Properties>ObjectID</Properties>\n            <Properties>CustomerKey</Properties>\n            <Properties>Name</Properties>\n            <Properties>CreatedDate</Properties>\n            <Properties>ModifiedDate</Properties>\n            <Properties>Client.ID</Properties>\n            <Properties>Description</Properties>\n            <Properties>IsSendable</Properties>\n            <Properties>IsTestable</Properties>\n            <Properties>SendableCustomObjectField</Properties>\n            <Properties>SendableSubscriberField</Properties>\n            <Properties>DataRetentionPeriodLength</Properties>\n            <Properties>DataRetentionPeriodUnitOfMeasure</Properties>\n            <Properties>RowBasedRetention</Properties>\n            <Properties>ResetRetentionPeriodOnImport</Properties>\n            <Properties>DeleteAtEndOfRetentionPeriod</Properties>\n            <Properties>RetainUntil</Properties>\n         </RetrieveRequest>\n      </RetrieveRequestMsg>\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account Created",
+			"item": [
+				{
+					"name": "Account Created DE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2354435a-759c-423f-b516-b72199fbc5f4",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "text/xml",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <!--\n            <Options>\n             <SendResponseTo>\n      \t\t<ResponseType>email</ResponseType>\n      \t\t<ResponseAddress>your_address@salesforce.com</ResponseAddress>\n      \t\t<RespondWhen>OnCallComplete</RespondWhen>\n      \t\t<IncludeResults>true</IncludeResults>\n      \t\t<IncludeObjects>true</IncludeObjects>\n  \t\t   </SendResponseTo>\n             <RequestType>Asynchronous</RequestType>\n      \t    </Options>\n      \t-->\n         <Objects xsi:type=\"DataExtension\">\n            <Client>\n                <ID>{{sfmcClientId}}</ID>\n            </Client>\n            <CustomerKey>account.created</CustomerKey>\n            <Name>Account Created</Name>\n            <!-- Specify folder DE created in\n            <CategoryID>432655</CategoryID>\n            -->\n            <IsSendable>true</IsSendable>\n            <IsTestable>true</IsTestable>\n             <Template>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ModifiedDate xsi:nil=\"true\"/>\n               <ObjectID>{{sfmcTrigSendTemplateId}}</ObjectID>\n             </Template>\n            <Fields>\n                <Field>\n                    <CustomerKey>FirstName</CustomerKey>\n                    <Name>FirstName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>LastName</CustomerKey>\n                    <Name>LastName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n                <Field>\n                    <CustomerKey>AccountHomeLink</CustomerKey>\n                    <Name>AccountHomeLink</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>250</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n                <Field>\n                    <CustomerKey>SiteID</CustomerKey>\n                    <Name>SiteID</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n               \n            </Fields>\n         </Objects>\n\t\t</CreateRequest>\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Account Created Email Template",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2fca7df0-57b1-4df2-b4d5-5a0d7c704d1b",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"if (data.id) {",
+									"  tests[\"Body has id\"] = true; ",
+									"  postman.setEnvironmentVariable(\"accountCreatedEmailId\", data.data.email.legacy.legacyId);",
+									"}",
+									"else {",
+									"  tests[\"Body has id\"] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d09e7347-7178-4e1c-b252-885e432bc2b1",
+								"exec": [
+									"            "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Account Created\",\n  \"channels\": {\n    \"email\": true,\n    \"web\": false\n  },\n  \"views\": {\n    \"html\": {\n      \"content\": \"\\r\\n\\r\\n%%[\\r\\nvar @fn, @ln, @acctlink\\r\\nSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\nSET @ln = AttributeValue(\\\"LastName\\\")\\r\\nSET @acctlink = AttributeValue(\\\"AccountHomeLink\\\")\\r\\n]%%\\r\\n\\r\\n<html>\\r\\n  \\r\\n<table width=\\\"100%\\\" cellpadding=\\\"0\\\" cellspacing=\\\"0\\\">\\r\\n    <tr> \\r\\n        <td align=\\\"center\\\" style=\\\"background:#e0e0e0;padding:50px 0;\\\">\\r\\n            <center>\\r\\n                <table style=\\\"background:#ffffff;border:1px solid #999999;width:680px;\\\">\\r\\n                    <tr>\\r\\n                        <td style=\\\"font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;\\\">\\r\\n\\r\\n                            <p style=\\\"font-family:georgia;font-size:20px;\\\">\\r\\n                                Dear&nbsp;%%=v(@fn)=%% %%=v(@ln)=%%,\\r\\n                            <\\/p>\\r\\n                            <p>You have successfully created a new account.<\\/p>\\r\\n                            <p>You can visit your account at <a href=\\\"%%=v(@acctlink)=%%\\\">%%=v(@acctlink)=%%<\\/a>.<\\/p>\\r\\n\\r\\n                            <p>This is an automatically generated email, please do not reply.<\\/p>\\r\\n\\r\\n                        <\\/td>\\r\\n                    <\\/tr>\\r\\n                <\\/table>\\r\\n            <\\/center>\\r\\n        <\\/td>\\r\\n    <\\/tr>\\r\\n<\\/table>\\r\\n\\r\\n <table cellpadding=\\\"2\\\" cellspacing=\\\"0\\\" width=\\\"600\\\" ID=\\\"Table5\\\" Border=0><tr><td><font face=\\\"verdana\\\" size=\\\"1\\\" color=\\\"#444444\\\">This email was sent by: <b>%%Member_Busname%%<\\/b><br>%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%<br><br><\\/font><\\/td><\\/tr><\\/table>\\r\\n  \\r\\n<\\/html>\\r\\n\\r\\n\\r\\n\\r\\n<custom name=\\\"opencounter\\\" type=\\\"tracking\\\"\\/>\\r\\n\\r\\n<a href=\\\"%%profile_center_url%%\\\" alias=\\\"Update Profile\\\">Update Profile<\\/a>\\r\\n\\r\\n\"\n    },\n    \"text\": {\n    \t\"content\": \"%%[\\r\\n\\t\\tvar @fn, @ln, @acctlink\\r\\n\\t\\tSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\n\\t\\tSET @ln = AttributeValue(\\\"LastName\\\")\\r\\n\\t\\tSET @acctlink = AttributeValue(\\\"AccountHomeLink\\\")\\r\\n\\t\\t]%%\\r\\n\\t\\t \\r\\n\\t\\tDear\\u00A0%%=v(@fn)=%% %%=v(@ln)=%%,\\r\\n\\t\\t \\r\\n\\t\\tYou have successfully created a new account.\\r\\n\\t\\t \\r\\n\\t\\tYou can visit your account at %%=v(@acctlink)=%%\\r\\n\\t\\t%%=v(@acctlink)=%%\\r\\n\\t\\t.\\r\\n\\t\\t \\r\\n\\t\\tThis is an automatically generated email, please do not reply.\\r\\n\\t\\t \\r\\n\\t\\tThis email was sent by: %%Member_Busname%%\\r\\n\\t\\t%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%\\r\\n\\t\\t \\r\\n\\t\\tUpdate Profile\\r\\n\\t\\t%%profile_center_url%%\"\n    \t\n    },\n    \"subjectline\": {\n    \t \"content\": \"Your New Account\"\n    },\n    \"preheader\": {}\n  },\n  \"assetType\": {\n    \"name\": \"htmlemail\",\n    \"id\": 208\n   }\n}"
+						},
+						"url": {
+							"raw": "{{restEndPoint}}/asset/v1/content/assets",
+							"host": [
+								"{{restEndPoint}}"
+							],
+							"path": [
+								"asset",
+								"v1",
+								"content",
+								"assets"
+							]
+						},
+						"description": "Adding the Account Created Email Template"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account Created Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "text/xml",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n         <Options/>\n         <Objects xsi:type=\"TriggeredSendDefinition\">\n            <PartnerKey xsi:nil=\"true\"/>\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>account.created</CustomerKey>\n            <Name>Account Created</Name>\n            <SendClassification>\n               <PartnerKey xsi:nil=\"true\"/>\n               <CustomerKey>Default Transactional</CustomerKey>\n               <ObjectID xsi:nil=\"true\"/>\n            </SendClassification>\n            <Email>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ObjectID xsi:nil=\"true\"/>\n               <ID>{{accountCreatedEmailId}}</ID>\n            </Email>\n            <SendSourceDataExtension>\n               <CustomerKey>account.created</CustomerKey>\n            </SendSourceDataExtension>\n         </Objects>\n      </CreateRequest>\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						},
+						"description": "Create Account Created Trig Send"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Account Created Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "text/xml",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n    <UpdateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <Options/>\n        <Objects xsi:type=\"TriggeredSendDefinition\">\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>account.created</CustomerKey>\n            <TriggeredSendStatus>Active</TriggeredSendStatus> \n        </Objects>\n    </UpdateRequest>\n\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account Updated",
+			"item": [
+				{
+					"name": "Account Updated DE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2354435a-759c-423f-b516-b72199fbc5f4",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <!--\n            <Options>\n             <SendResponseTo>\n      \t\t<ResponseType>email</ResponseType>\n      \t\t<ResponseAddress>your_address@salesforce.com</ResponseAddress>\n      \t\t<RespondWhen>OnCallComplete</RespondWhen>\n      \t\t<IncludeResults>true</IncludeResults>\n      \t\t<IncludeObjects>true</IncludeObjects>\n  \t\t   </SendResponseTo>\n             <RequestType>Asynchronous</RequestType>\n      \t    </Options>\n      \t-->\n         <Objects xsi:type=\"DataExtension\">\n            <Client>\n                <ID>{{sfmcClientId}}</ID>\n            </Client>\n            <CustomerKey>account.updated</CustomerKey>\n            <Name>Account Updated</Name>\n            <!-- Specify folder DE created in\n            <CategoryID>432655</CategoryID>\n            -->\n            <IsSendable>true</IsSendable>\n            <IsTestable>true</IsTestable>\n             <Template>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ModifiedDate xsi:nil=\"true\"/>\n               <ObjectID>{{sfmcTrigSendTemplateId}}</ObjectID>\n             </Template>\n            <Fields>\n                <Field>\n                    <CustomerKey>FirstName</CustomerKey>\n                    <Name>FirstName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>LastName</CustomerKey>\n                    <Name>LastName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n                <Field>\n                    <CustomerKey>AccountHomeLink</CustomerKey>\n                    <Name>AccountHomeLink</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>250</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n                <Field>\n                    <CustomerKey>SiteID</CustomerKey>\n                    <Name>SiteID</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n                 <Field>\n                    <CustomerKey>EmailType</CustomerKey>\n                    <Name>EmailType</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>true</IsNillable>\n                    <IsRequired>false</IsRequired>\n                </Field> \n            </Fields>\n         </Objects>\n\t\t</CreateRequest>\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Account Updated Email Template",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2fca7df0-57b1-4df2-b4d5-5a0d7c704d1b",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"if (data.id) {",
+									"  tests[\"Body has id\"] = true; ",
+									"  postman.setEnvironmentVariable(\"accountUpdatedEmailId\", data.data.email.legacy.legacyId);",
+									"}",
+									"else {",
+									"  tests[\"Body has id\"] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Account Updated\",\n  \"channels\": {\n    \"email\": true,\n    \"web\": false\n  },\n  \"views\": {\n    \"html\": {\n      \"content\": \"%%[\\r\\nvar @fn, @ln, @acctlink\\r\\n\\r\\nSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\nSET @ln = AttributeValue(\\\"LastName\\\")\\r\\nSET @acctlink = AttributeValue(\\\"AccountHomeLink\\\")\\r\\nSET @emailtype = AttributeValue(\\\"EmailType\\\")\\r\\n]%%\\r\\n\\r\\n<table width=\\\"100%\\\" cellpadding=\\\"0\\\" cellspacing=\\\"0\\\">\\r\\n    <tr>\\r\\n        <td align=\\\"center\\\" style=\\\"background:#e0e0e0;padding:50px 0;\\\">\\r\\n            <center>\\r\\n                <table style=\\\"background:#ffffff;border:1px solid #999999;width:680px;\\\">\\r\\n                    <tr>\\r\\n                        <td style=\\\"font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;\\\">\\r\\n\\r\\n                            <p style=\\\"font-family:georgia;font-size:20px;\\\">\\r\\n                                Dear&nbsp;%%=v(@fn)=%% %%=v(@ln)=%%,\\r\\n                            <\\/p>\\r\\n\\r\\n                            %%[IF @emailtype == 7 THEN]%%\\r\\n                                 <p>You have successfully changed the name in your account.<\\/p>\\r\\n                            %%[ELSEIF @emailtype == 8 THEN]%%\\r\\n                                 <p>You have successfully changed an address in your account.<\\/p>\\r\\n                            %%[ELSEIF @emailtype == 9 THEN]%%                                                                    <p>You have successfully changed a payment method in your account.<\\/p>\\r\\n                            %%[ELSEIF @emailtype == 10 THEN]%%\\r\\n                                 <p>You have successfully changed the email address of your account.<\\/p>\\r\\n                            %%[ELSE]%%\\r\\n                                 <p>You have successfully updated your account.<\\/p>\\r\\n                            %%[ENDIF]%%\\r\\n\\r\\n                            <p>You can visit your account at <a href=\\\"%%=v(@acctlink)=%%\\\">%%=v(@acctlink)=%%<\\/a>.<\\/p>\\r\\n\\r\\n                            <p>This is an automatically generated email, please do not reply.<\\/p>\\r\\n\\r\\n                        <\\/td>\\r\\n                    <\\/tr>\\r\\n                <\\/table>\\r\\n            <\\/center>\\r\\n        <\\/td>\\r\\n    <\\/tr>\\r\\n<\\/table>\\r\\n\\r\\n<table cellpadding=\\\"2\\\" cellspacing=\\\"0\\\" width=\\\"600\\\" ID=\\\"Table5\\\" Border=0><tr><td><font face=\\\"verdana\\\" size=\\\"1\\\" color=\\\"#444444\\\">This email was sent by: <b>%%Member_Busname%%<\\/b><br>%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%<br><br><\\/font><\\/td><\\/tr><\\/table>\\r\\n\\r\\n<a href=\\\"%%profile_center_url%%\\\" alias=\\\"Update Profile\\\">Update Profile<\\/a>\\r\\n\\r\\n<custom name=\\\"opencounter\\\" type=\\\"tracking\\\"\\/>\\r\\n\"\n    },\n    \"text\": {\n    \t\"content\": \"%%[\\r\\nvar @fn, @ln, @acctlink\\r\\n\\r\\nSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\nSET @ln = AttributeValue(\\\"LastName\\\")\\r\\nSET @acctlink = AttributeValue(\\\"AccountHomeLink\\\")\\r\\nSET @emailtype = AttributeValue(\\\"EmailType\\\")\\r\\n]%%\\r\\n \\r\\nDear\\u00A0%%=v(@fn)=%% %%=v(@ln)=%%,\\r\\n \\r\\n%%[IF @emailtype == 7 THEN]%%\\r\\n \\r\\nYou have successfully changed the name in your account.\\r\\n \\r\\n%%[ELSEIF @emailtype == 8 THEN]%%\\r\\n \\r\\nYou have successfully changed an address in your account.\\r\\n \\r\\n%%[ELSEIF @emailtype == 9 THEN]%%\\r\\n \\r\\nYou have successfully changed a payment method in your account.\\r\\n \\r\\n%%[ELSEIF @emailtype == 10 THEN]%%\\r\\n \\r\\nYou have successfully changed the email address of your account.\\r\\n \\r\\n%%[ELSE]%%\\r\\n \\r\\nYou have successfully updated your account.\\r\\n \\r\\n%%[ENDIF]%%\\r\\n \\r\\nYou can visit your account at %%=v(@acctlink)=%%\\r\\n%%=v(@acctlink)=%%\\r\\n.\\r\\n \\r\\nThis is an automatically generated email, please do not reply.\\r\\n \\r\\nThis email was sent by: %%Member_Busname%%\\r\\n%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%\\r\\n \\r\\nUpdate Profile\\r\\n%%profile_center_url%%\\r\\n\\r\\n\"\n    \t\n    },\n    \"subjectline\": {\n    \t \"content\": \"Your  Account\"\n    },\n    \"preheader\": {}\n  },\n  \"assetType\": {\n    \"name\": \"htmlemail\",\n    \"id\": 208\n   }\n}"
+						},
+						"url": {
+							"raw": "{{restEndPoint}}/asset/v1/content/assets",
+							"host": [
+								"{{restEndPoint}}"
+							],
+							"path": [
+								"asset",
+								"v1",
+								"content",
+								"assets"
+							]
+						},
+						"description": "Adding the Account Created Email Template"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account Updated Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n         <Options/>\n         <Objects xsi:type=\"TriggeredSendDefinition\">\n            <PartnerKey xsi:nil=\"true\"/>\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>account.updated</CustomerKey>\n            <Name>Account Updated</Name>\n            <SendClassification>\n               <PartnerKey xsi:nil=\"true\"/>\n               <CustomerKey>Default Transactional</CustomerKey>\n               <ObjectID xsi:nil=\"true\"/>\n            </SendClassification>\n            <Email>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ObjectID xsi:nil=\"true\"/>\n               <ID>{{accountUpdatedEmailId}}</ID>\n            </Email>\n            <SendSourceDataExtension>\n               <CustomerKey>account.updated</CustomerKey>\n            </SendSourceDataExtension>\n         </Objects>\n      </CreateRequest>\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						},
+						"description": "Create Account Created Trig Send"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Account Updated Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "text/xml",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n    <UpdateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <Options/>\n        <Objects xsi:type=\"TriggeredSendDefinition\">\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>account.updated</CustomerKey>\n            <TriggeredSendStatus>Active</TriggeredSendStatus> \n        </Objects>\n    </UpdateRequest>\n\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account Locked",
+			"item": [
+				{
+					"name": "Account Locked DE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2354435a-759c-423f-b516-b72199fbc5f4",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <!--\n            <Options>\n             <SendResponseTo>\n      \t\t<ResponseType>email</ResponseType>\n      \t\t<ResponseAddress>your_address@salesforce.com</ResponseAddress>\n      \t\t<RespondWhen>OnCallComplete</RespondWhen>\n      \t\t<IncludeResults>true</IncludeResults>\n      \t\t<IncludeObjects>true</IncludeObjects>\n  \t\t   </SendResponseTo>\n             <RequestType>Asynchronous</RequestType>\n      \t    </Options>\n      \t-->\n         <Objects xsi:type=\"DataExtension\">\n            <Client>\n                <ID>{{sfmcClientId}}</ID>\n            </Client>\n            <CustomerKey>account.locked</CustomerKey>\n            <Name>Account Locked</Name>\n            <!-- Specify folder DE created in\n            <CategoryID>432655</CategoryID>\n            -->\n            <IsSendable>true</IsSendable>\n            <IsTestable>true</IsTestable>\n             <Template>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ModifiedDate xsi:nil=\"true\"/>\n               <ObjectID>{{sfmcTrigSendTemplateId}}</ObjectID>\n             </Template>\n            <Fields>\n                <Field>\n                    <CustomerKey>FirstName</CustomerKey>\n                    <Name>FirstName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>LastName</CustomerKey>\n                    <Name>LastName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n                <Field>\n                    <CustomerKey>SiteID</CustomerKey>\n                    <Name>SiteID</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n               \n            </Fields>\n         </Objects>\n\t\t</CreateRequest>\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Account Locked Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2fca7df0-57b1-4df2-b4d5-5a0d7c704d1b",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"if (data.id) {",
+									"  tests[\"Body has id\"] = true; ",
+									"  postman.setEnvironmentVariable(\"accountLockedEmailId\", data.data.email.legacy.legacyId);",
+									"}",
+									"else {",
+									"  tests[\"Body has id\"] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Account Locked\",\n  \"channels\": {\n    \"email\": true,\n    \"web\": false\n  },\n  \"views\": {\n    \"html\": {\n      \"content\": \"%%[\\r\\nvar @fn, @ln\\r\\n\\r\\nSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\nSET @ln = AttributeValue(\\\"LastName\\\")\\r\\n]%%\\r\\n\\r\\n<table width=\\\"100%\\\" cellpadding=\\\"0\\\" cellspacing=\\\"0\\\">\\r\\n    <tr>\\r\\n        <td align=\\\"center\\\" style=\\\"background:#e0e0e0;padding:50px 0;\\\">\\r\\n            <center>\\r\\n                <table style=\\\"background:#ffffff;border:1px solid #999999;width:680px;\\\">\\r\\n                    <tr>\\r\\n                        <td style=\\\"font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;\\\">\\r\\n\\r\\n                            <h1 style=\\\"font-size:20px;font-family:georgia;font-weight:normal;\\\">\\r\\n                                Dear %%=v(@fn)=%% %%=v(@ln)=%%,\\r\\n                            <\\/h1>\\r\\n\\r\\n                            <p>Your account has been temporarily locked because the maximum number of invalid logins has been exceeded.<\\/p>\\r\\n\\r\\n                            <p>Please try logging in again later.<\\/p>\\r\\n\\r\\n                            <p>If you feel you have received this email in error, please contact customer service.<\\/p>\\r\\n\\r\\n                            <p>This is an automatically generated email, please do not reply.<\\/p>\\r\\n\\r\\n                        <\\/td>\\r\\n                    <\\/tr>\\r\\n                <\\/table>\\r\\n            <\\/center>\\r\\n        <\\/td>\\r\\n    <\\/tr>\\r\\n<\\/table>\\r\\n\\r\\n<table cellpadding=\\\"2\\\" cellspacing=\\\"0\\\" width=\\\"600\\\" ID=\\\"Table5\\\" Border=0><tr><td><font face=\\\"verdana\\\" size=\\\"1\\\" color=\\\"#444444\\\">This email was sent by: <b>%%Member_Busname%%<\\/b><br>%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%<br><br><\\/font><\\/td><\\/tr><\\/table>\\r\\n\\r\\n<a href=\\\"%%profile_center_url%%\\\" alias=\\\"Update Profile\\\">Update Profile<\\/a>\"\n    },\n    \"text\": {\n    \t\"content\": \"%%[\\r\\nvar @fn, @ln\\r\\n\\r\\nSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\nSET @ln = AttributeValue(\\\"LastName\\\")\\r\\n]%%\\r\\n \\r\\nDear %%=v(@fn)=%% %%=v(@ln)=%%,\\r\\n \\r\\nYour account has been temporarily locked because the maximum number of invalid logins has been exceeded.\\r\\n \\r\\nPlease try logging in again later.\\r\\n \\r\\nIf you feel you have received this email in error, please contact customer service.\\r\\n \\r\\nThis is an automatically generated email, please do not reply.\\r\\n \\r\\nThis email was sent by: %%Member_Busname%%\\r\\n%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%\\r\\n \\r\\nUpdate Profile\\r\\n%%profile_center_url%%\\r\\n\"\n    \t\n    },\n    \"subjectline\": {\n    \t \"content\": \"Your  Account\"\n    },\n    \"preheader\": {}\n  },\n  \"assetType\": {\n    \"name\": \"htmlemail\",\n    \"id\": 208\n   }\n}"
+						},
+						"url": {
+							"raw": "{{restEndPoint}}/asset/v1/content/assets",
+							"host": [
+								"{{restEndPoint}}"
+							],
+							"path": [
+								"asset",
+								"v1",
+								"content",
+								"assets"
+							]
+						},
+						"description": "Adding the Account Created Email Template"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account Locked Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n         <Options/>\n         <Objects xsi:type=\"TriggeredSendDefinition\">\n            <PartnerKey xsi:nil=\"true\"/>\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>account.locked</CustomerKey>\n            <Name>Account Locked</Name>\n            <SendClassification>\n               <PartnerKey xsi:nil=\"true\"/>\n               <CustomerKey>Default Transactional</CustomerKey>\n               <ObjectID xsi:nil=\"true\"/>\n            </SendClassification>\n            <Email>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ObjectID xsi:nil=\"true\"/>\n               <ID>{{accountLockedEmailId}}</ID>\n            </Email>\n            <SendSourceDataExtension>\n               <CustomerKey>account.locked</CustomerKey>\n            </SendSourceDataExtension>\n         </Objects>\n      </CreateRequest>\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						},
+						"description": "Create Account Created Trig Send"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Account Locked Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "text/xml",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n    <UpdateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <Options/>\n        <Objects xsi:type=\"TriggeredSendDefinition\">\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>account.locked</CustomerKey>\n            <TriggeredSendStatus>Active</TriggeredSendStatus> \n        </Objects>\n    </UpdateRequest>\n\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account Password Changed",
+			"item": [
+				{
+					"name": "Account Password Changed DE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2354435a-759c-423f-b516-b72199fbc5f4",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <!--\n            <Options>\n             <SendResponseTo>\n      \t\t<ResponseType>email</ResponseType>\n      \t\t<ResponseAddress>your_address@salesforce.com</ResponseAddress>\n      \t\t<RespondWhen>OnCallComplete</RespondWhen>\n      \t\t<IncludeResults>true</IncludeResults>\n      \t\t<IncludeObjects>true</IncludeObjects>\n  \t\t   </SendResponseTo>\n             <RequestType>Asynchronous</RequestType>\n      \t    </Options>\n      \t-->\n         <Objects xsi:type=\"DataExtension\">\n            <Client>\n                <ID>{{sfmcClientId}}</ID>\n            </Client>\n            <CustomerKey>account.passwordchanged</CustomerKey>\n            <Name>Account Password Changed</Name>\n            <!-- Specify folder DE created in\n            <CategoryID>432655</CategoryID>\n            -->\n            <IsSendable>true</IsSendable>\n            <IsTestable>true</IsTestable>\n             <Template>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ModifiedDate xsi:nil=\"true\"/>\n               <ObjectID>{{sfmcTrigSendTemplateId}}</ObjectID>\n             </Template>\n            <Fields>\n                <Field>\n                    <CustomerKey>FirstName</CustomerKey>\n                    <Name>FirstName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>LastName</CustomerKey>\n                    <Name>LastName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                 <Field>\n                    <CustomerKey>AccountHomeLink</CustomerKey>\n                    <Name>AccountHomeLink</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>250</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n                <Field>\n                    <CustomerKey>SiteID</CustomerKey>\n                    <Name>SiteID</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n               \n            </Fields>\n         </Objects>\n\t\t</CreateRequest>\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Account Password Changed Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2fca7df0-57b1-4df2-b4d5-5a0d7c704d1b",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"if (data.id) {",
+									"  tests[\"Body has id\"] = true; ",
+									"  postman.setEnvironmentVariable(\"passwordchangedEmailId\", data.data.email.legacy.legacyId);",
+									"}",
+									"else {",
+									"  tests[\"Body has id\"] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Password Changed\",\n  \"channels\": {\n    \"email\": true,\n    \"web\": false\n  },\n  \"views\": {\n    \"html\": {\n      \"content\": \"%%[\\r\\nvar @fn, @ln, @acctlink\\r\\n\\r\\nSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\nSET @ln = AttributeValue(\\\"LastName\\\")\\r\\nSET @acctlink = AttributeValue(\\\"AccountHomeLink\\\")\\r\\n]%%\\r\\n\\r\\n<table width=\\\"100%\\\" cellpadding=\\\"0\\\" cellspacing=\\\"0\\\">\\r\\n    <tr>\\r\\n        <td align=\\\"center\\\" style=\\\"background:#e0e0e0;padding:50px 0;\\\">\\r\\n            <center>\\r\\n                <table style=\\\"background:#ffffff;border:1px solid #999999;width:680px;\\\">\\r\\n                    <tr>\\r\\n                        <td style=\\\"font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;\\\">\\r\\n\\r\\n                            <p style=\\\"font-family:georgia;font-size:20px;\\\">\\r\\n                                Dear&nbsp;%%=v(@fn)=%% %%=v(@ln)=%%,\\r\\n                            <\\/p>\\r\\n\\r\\n                            <p>You have successfully created a new password for your account.<\\/p>\\r\\n\\r\\n                            <p>You can visit your account at <a href=\\\"%%=v(@acctlink)=%%\\\">%%=v(@acctlink)=%%<\\/a>.<\\/p>\\r\\n\\r\\n                            <p>This is an automatically generated email, please do not reply.<\\/p>\\r\\n\\r\\n                        <\\/td>\\r\\n                    <\\/tr>\\r\\n                <\\/table>\\r\\n            <\\/center>\\r\\n        <\\/td>\\r\\n    <\\/tr>\\r\\n<\\/table>\\r\\n\\r\\n<table cellpadding=\\\"2\\\" cellspacing=\\\"0\\\" width=\\\"600\\\" ID=\\\"Table5\\\" Border=0><tr><td><font face=\\\"verdana\\\" size=\\\"1\\\" color=\\\"#444444\\\">This email was sent by: <b>%%Member_Busname%%<\\/b><br>%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%<br><br><\\/font><\\/td><\\/tr><\\/table>\\r\\n\\r\\n<a href=\\\"%%profile_center_url%%\\\" alias=\\\"Update Profile\\\">Update Profile<\\/a>\"\n    },\n    \"text\": {\n    \t\"content\": \"%%[\\r\\nvar @fn, @ln, @acctlink\\r\\n\\r\\nSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\nSET @ln = AttributeValue(\\\"LastName\\\")\\r\\nSET @acctlink = AttributeValue(\\\"AccountHomeLink\\\")\\r\\n]%%\\r\\n \\r\\nDear\\u00A0%%=v(@fn)=%% %%=v(@ln)=%%,\\r\\n \\r\\nYou have successfully created a new password for your account.\\r\\n \\r\\nYou can visit your account at %%=v(@acctlink)=%%\\r\\n%%=v(@acctlink)=%%\\r\\n.\\r\\n \\r\\nThis is an automatically generated email, please do not reply.\\r\\n \\r\\nThis email was sent by: %%Member_Busname%%\\r\\n%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%\\r\\n \\r\\nUpdate Profile\\r\\n%%profile_center_url%%\\r\\n\"\n    \t\n    },\n    \"subjectline\": {\n    \t \"content\": \"Your New Password\"\n    },\n    \"preheader\": {}\n  },\n  \"assetType\": {\n    \"name\": \"htmlemail\",\n    \"id\": 208\n   }\n}"
+						},
+						"url": {
+							"raw": "{{restEndPoint}}/asset/v1/content/assets",
+							"host": [
+								"{{restEndPoint}}"
+							],
+							"path": [
+								"asset",
+								"v1",
+								"content",
+								"assets"
+							]
+						},
+						"description": "Adding the Account Created Email Template"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account Password Changed Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n         <Options/>\n         <Objects xsi:type=\"TriggeredSendDefinition\">\n            <PartnerKey xsi:nil=\"true\"/>\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>account.passwordchanged</CustomerKey>\n            <Name>Account Password Changed</Name>\n            <SendClassification>\n               <PartnerKey xsi:nil=\"true\"/>\n               <CustomerKey>Default Transactional</CustomerKey>\n               <ObjectID xsi:nil=\"true\"/>\n            </SendClassification>\n            <Email>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ObjectID xsi:nil=\"true\"/>\n               <ID>{{passwordchangedEmailId}}</ID>\n            </Email>\n            <SendSourceDataExtension>\n               <CustomerKey>account.passwordchanged</CustomerKey>\n            </SendSourceDataExtension>\n         </Objects>\n      </CreateRequest>\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						},
+						"description": "Create Account Created Trig Send"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Account Password Changed Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n    <UpdateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <Options/>\n        <Objects xsi:type=\"TriggeredSendDefinition\">\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>account.passwordchanged</CustomerKey>\n            <TriggeredSendStatus>Active</TriggeredSendStatus> \n        </Objects>\n    </UpdateRequest>\n\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account Password Reset",
+			"item": [
+				{
+					"name": "Password Reset DE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2354435a-759c-423f-b516-b72199fbc5f4",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <!--\n            <Options>\n             <SendResponseTo>\n      \t\t<ResponseType>email</ResponseType>\n      \t\t<ResponseAddress>your_address@salesforce.com</ResponseAddress>\n      \t\t<RespondWhen>OnCallComplete</RespondWhen>\n      \t\t<IncludeResults>true</IncludeResults>\n      \t\t<IncludeObjects>true</IncludeObjects>\n  \t\t   </SendResponseTo>\n             <RequestType>Asynchronous</RequestType>\n      \t    </Options>\n      \t-->\n         <Objects xsi:type=\"DataExtension\">\n            <Client>\n                <ID>{{sfmcClientId}}</ID>\n            </Client>\n            <CustomerKey>account.passwordreset</CustomerKey>\n            <Name>Account Password Reset</Name>\n            <!-- Specify folder DE created in\n            <CategoryID>432655</CategoryID>\n            -->\n            <IsSendable>true</IsSendable>\n            <IsTestable>true</IsTestable>\n             <Template>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ModifiedDate xsi:nil=\"true\"/>\n               <ObjectID>{{sfmcTrigSendTemplateId}}</ObjectID>\n             </Template>\n            <Fields>\n                <Field>\n                    <CustomerKey>FirstName</CustomerKey>\n                    <Name>FirstName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>LastName</CustomerKey>\n                    <Name>LastName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                 <Field>\n                    <CustomerKey>ResetPasswordLink\n</CustomerKey>\n                    <Name>ResetPasswordLink\n</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>250</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n                <Field>\n                    <CustomerKey>SiteID</CustomerKey>\n                    <Name>SiteID</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n               \n            </Fields>\n         </Objects>\n\t\t</CreateRequest>\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Password Reset Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2fca7df0-57b1-4df2-b4d5-5a0d7c704d1b",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"if (data.id) {",
+									"  tests[\"Body has id\"] = true; ",
+									"  postman.setEnvironmentVariable(\"passwordresetEmailId\", data.data.email.legacy.legacyId);",
+									"}",
+									"else {",
+									"  tests[\"Body has id\"] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Account Password Reset\",\n  \"channels\": {\n    \"email\": true,\n    \"web\": false\n  },\n  \"views\": {\n    \"html\": {\n      \"content\": \"%%[\\r\\nvar @pwlink, @fn, @ln\\r\\n\\r\\nSET @pwlink = AttributeValue(\\\"ResetPasswordLink\\\")\\r\\nSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\nSET @ln = AttributeValue(\\\"LastName\\\")\\r\\n]%%\\r\\n\\r\\n<table width=\\\"100%\\\" cellpadding=\\\"0\\\" cellspacing=\\\"0\\\">\\r\\n    <tr>\\r\\n        <td align=\\\"center\\\" style=\\\"background:#e0e0e0;padding:50px 0;\\\">\\r\\n            <center>\\r\\n                <table style=\\\"background:#ffffff;border:1px solid #999999;width:680px;\\\">\\r\\n                    <tr>\\r\\n                        <td style=\\\"font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;\\\">\\r\\n\\r\\n                            <p style=\\\"font-family:georgia;font-size:20px;\\\">\\r\\n                                Dear %%=v(@fn)=%% %%=v(@ln)=%%,\\r\\n                            <\\/p>\\r\\n\\r\\n                            <p>We received a request to reset the password associated with this email address. If you made this request, please follow the instructions below.<\\/p>\\r\\n\\r\\n                            <p>If you did not request to have your password reset you can safely ignore this email. Rest assured your customer account is safe.<\\/p>\\r\\n\\r\\n                            <p>Click the link below to reset your password:<\\/p>\\r\\n\\r\\n                            <p><a href=\\\"%%=v(@pwlink)=%%\\\" title=\\\"Your Password\\\">%%=v(@pwlink)=%%<\\/a><\\/p>\\r\\n\\r\\n                            <p>If clicking doesn't seem to work, you can copy and paste the link into your browser's address window, or retype it there. We will give instructions for resetting your password. Note that this link is only active for a short period of time.<\\/p>\\r\\n\\r\\n                            <p>For security purposes, this link will expire in 30 minutes or after you reset your password.<\\/p>\\r\\n\\r\\n                            <p>This is an automatically generated email, please do not reply.<\\/p>\\r\\n\\r\\n                        <\\/td>\\r\\n                    <\\/tr>\\r\\n                <\\/table>\\r\\n            <\\/center>\\r\\n        <\\/td>\\r\\n    <\\/tr>\\r\\n<\\/table>\\r\\n\\r\\n<table cellpadding=\\\"2\\\" cellspacing=\\\"0\\\" width=\\\"600\\\" ID=\\\"Table5\\\" Border=0><tr><td><font face=\\\"verdana\\\" size=\\\"1\\\" color=\\\"#444444\\\">This email was sent by: <b>%%Member_Busname%%<\\/b><br>%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%<br><br><\\/font><\\/td><\\/tr><\\/table>\\r\\n\\r\\n<a href=\\\"%%profile_center_url%%\\\" alias=\\\"Update Profile\\\">Update Profile<\\/a>\"\n    },\n    \"text\": {\n    \t\"content\": \"%%[\\r\\nvar @pwlink, @fn, @ln\\r\\n\\r\\nSET @pwlink = AttributeValue(\\\"ResetPasswordLink\\\")\\r\\nSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\nSET @ln = AttributeValue(\\\"LastName\\\")\\r\\n]%%\\r\\n \\r\\nDear %%=v(@fn)=%% %%=v(@ln)=%%,\\r\\n \\r\\nWe received a request to reset the password associated with this email address. If you made this request, please follow the instructions below.\\r\\n \\r\\nIf you did not request to have your password reset you can safely ignore this email. Rest assured your customer account is safe.\\r\\n \\r\\nClick the link below to reset your password:\\r\\n \\r\\n%%=v(@pwlink)=%%\\r\\n%%=v(@pwlink)=%%\\r\\n \\r\\nIf clicking doesn't seem to work, you can copy and paste the link into your browser's address window, or retype it there. We will give instructions for resetting your password. Note that this link is only active for a short period of time.\\r\\n \\r\\nFor security purposes, this link will expire in 30 minutes or after you reset your password.\\r\\n \\r\\nThis is an automatically generated email, please do not reply.\\r\\n \\r\\nThis email was sent by: %%Member_Busname%%\\r\\n%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%\\r\\n \\r\\nUpdate Profile\\r\\n%%profile_center_url%%\\r\\n\"\n    \t\n    },\n    \"subjectline\": {\n    \t \"content\": \"Your New Password\"\n    },\n    \"preheader\": {}\n  },\n  \"assetType\": {\n    \"name\": \"htmlemail\",\n    \"id\": 208\n   }\n}"
+						},
+						"url": {
+							"raw": "{{restEndPoint}}/asset/v1/content/assets",
+							"host": [
+								"{{restEndPoint}}"
+							],
+							"path": [
+								"asset",
+								"v1",
+								"content",
+								"assets"
+							]
+						},
+						"description": "Adding the Account Created Email Template"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Password Reset Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n         <Options/>\n         <Objects xsi:type=\"TriggeredSendDefinition\">\n            <PartnerKey xsi:nil=\"true\"/>\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>account.passwordReset</CustomerKey>\n            <Name>Account Password Reset</Name>\n            <SendClassification>\n               <PartnerKey xsi:nil=\"true\"/>\n               <CustomerKey>Default Transactional</CustomerKey>\n               <ObjectID xsi:nil=\"true\"/>\n            </SendClassification>\n            <Email>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ObjectID xsi:nil=\"true\"/>\n               <ID>{{passwordresetEmailId}}</ID>\n            </Email>\n            <SendSourceDataExtension>\n               <CustomerKey>account.passwordreset</CustomerKey>\n            </SendSourceDataExtension>\n         </Objects>\n      </CreateRequest>\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						},
+						"description": "Create Account Created Trig Send"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Password Reset Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n    <UpdateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <Options/>\n        <Objects xsi:type=\"TriggeredSendDefinition\">\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>account.passwordreset</CustomerKey>\n            <TriggeredSendStatus>Active</TriggeredSendStatus> \n        </Objects>\n    </UpdateRequest>\n\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer Service - Contact Us",
+			"item": [
+				{
+					"name": "Contact Us DE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2354435a-759c-423f-b516-b72199fbc5f4",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <!--\n            <Options>\n             <SendResponseTo>\n      \t\t<ResponseType>email</ResponseType>\n      \t\t<ResponseAddress>your_address@salesforce.com</ResponseAddress>\n      \t\t<RespondWhen>OnCallComplete</RespondWhen>\n      \t\t<IncludeResults>true</IncludeResults>\n      \t\t<IncludeObjects>true</IncludeObjects>\n  \t\t   </SendResponseTo>\n             <RequestType>Asynchronous</RequestType>\n      \t    </Options>\n      \t-->\n         <Objects xsi:type=\"DataExtension\">\n            <Client>\n                <ID>{{sfmcClientId}}</ID>\n            </Client>\n            <CustomerKey>ContactUs</CustomerKey>\n            <Name>ContactUs</Name>\n            <!-- Specify folder DE created in\n            <CategoryID>432655</CategoryID>\n            -->\n            <IsSendable>true</IsSendable>\n            <IsTestable>true</IsTestable>\n             <Template>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ModifiedDate xsi:nil=\"true\"/>\n               <ObjectID>{{sfmcTrigSendTemplateId}}</ObjectID>\n             </Template>\n            <Fields>\n                <Field>\n                    <CustomerKey>FirstName</CustomerKey>\n                    <Name>FirstName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>LastName</CustomerKey>\n                    <Name>LastName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                 <Field>\n                    <CustomerKey>Phone\n</CustomerKey>\n                    <Name>Phone\n</Name>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n                <Field>\n                    <CustomerKey>MyQuestion</CustomerKey>\n                    <Name>MyQuestion</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>Comment</CustomerKey>\n                    <Name>Comment</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>CustomerEmailAddress</CustomerKey>\n                    <Name>CustomerEmailAddress</Name>\n                    <FieldType>EmailAddress</FieldType>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>SiteID</CustomerKey>\n                    <Name>SiteID</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n            </Fields>\n         </Objects>\n\t\t</CreateRequest>\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact Us  Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2fca7df0-57b1-4df2-b4d5-5a0d7c704d1b",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"if (data.id) {",
+									"  tests[\"Body has id\"] = true; ",
+									"  postman.setEnvironmentVariable(\"contactUsEmailId\", data.data.email.legacy.legacyId);",
+									"}",
+									"else {",
+									"  tests[\"Body has id\"] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Contact Us\",\n  \"channels\": {\n    \"email\": true,\n    \"web\": false\n  },\n  \"views\": {\n    \"html\": {\n      \"content\": \"%%[\\r\\nvar @fn, @ln, @phn, @odn, @myq, @com, @email\\r\\n\\r\\nSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\nSET @ln = AttributeValue(\\\"LastName\\\")\\r\\nSET @phn = AttributeValue(\\\"Phone\\\")\\r\\nSET @odn = AttributeValue(\\\"OrderNumber\\\")\\r\\nSET @myq = AttributeValue(\\\"MyQuestion\\\")\\r\\nSET @com = AttributeValue(\\\"Comment\\\")\\r\\nSET @email = AttributeValue(\\\"CustomerEmailAddress\\\")\\r\\n]%%\\r\\n\\r\\n<table width=\\\"100%\\\" cellpadding=\\\"0\\\" cellspacing=\\\"0\\\">\\r\\n    <tr>\\r\\n        <td align=\\\"center\\\" style=\\\"background:#e0e0e0;padding:50px 0;\\\">\\r\\n            <center>\\r\\n                <table style=\\\"background:#ffffff;border:1px solid #999999;width:680px;\\\">\\r\\n                    <tr>\\r\\n                        <td style=\\\"font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;\\\">\\r\\n\\r\\n                            <p style=\\\"font-family:georgia;font-size:20px;\\\">Salesforce Commerce Cloud<\\/p>\\r\\n\\r\\n                            <p>Name:\\r\\n                                %%=v(@fn)=%%\\r\\n                                %%=v(@ln)=%%\\r\\n                            <\\/p>\\r\\n\\r\\n                            <p>Email:\\r\\n                                %%=v(@email)=%%\\r\\n                            <\\/p>\\r\\n\\r\\n                            <p>Phone:\\r\\n                                %%=v(@phn)=%%\\r\\n                            <\\/p>\\r\\n\\r\\n                            <p>Order Number:\\r\\n                                %%=v(@odn)=%%\\r\\n                            <\\/p>\\r\\n\\r\\n                            <p>My Question:\\r\\n                                %%=v(@myq)=%%\\r\\n                            <\\/p>\\r\\n\\r\\n                            <p>Comment:\\r\\n                                %%=v(@com)=%%\\r\\n                            <\\/p>\\r\\n\\r\\n                        <\\/td>\\r\\n                    <\\/tr>\\r\\n                <\\/table>\\r\\n            <\\/center>\\r\\n        <\\/td>\\r\\n    <\\/tr>\\r\\n<\\/table>\\r\\n\\r\\n<table cellpadding=\\\"2\\\" cellspacing=\\\"0\\\" width=\\\"600\\\" ID=\\\"Table5\\\" Border=0><tr><td><font face=\\\"verdana\\\" size=\\\"1\\\" color=\\\"#444444\\\">This email was sent by: <b>%%Member_Busname%%<\\/b><br>%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%<br><br><\\/font><\\/td><\\/tr><\\/table>\\r\\n\\r\\n<a href=\\\"%%profile_center_url%%\\\" alias=\\\"Update Profile\\\">Update Profile<\\/a>\"\n    },\n    \"text\": {\n    \t\"content\": \"%%[\\r\\nvar @fn, @ln, @phn, @odn, @myq, @com, @email\\r\\n\\r\\nSET @fn = AttributeValue(\\\"FirstName\\\")\\r\\nSET @ln = AttributeValue(\\\"LastName\\\")\\r\\nSET @phn = AttributeValue(\\\"Phone\\\")\\r\\nSET @odn = AttributeValue(\\\"OrderNumber\\\")\\r\\nSET @myq = AttributeValue(\\\"MyQuestion\\\")\\r\\nSET @com = AttributeValue(\\\"Comment\\\")\\r\\nSET @email = AttributeValue(\\\"CustomerEmailAddress\\\")\\r\\n]%%\\r\\n \\r\\nSalesforce Commerce Cloud\\r\\n \\r\\nName:\\r\\n \\r\\n%%=v(@fn)=%%\\r\\n \\r\\n%%=v(@ln)=%%\\r\\n \\r\\nEmail:\\r\\n \\r\\n%%=v(@email)=%%\\r\\n \\r\\nPhone:\\r\\n \\r\\n%%=v(@phn)=%%\\r\\n \\r\\nOrder Number:\\r\\n \\r\\n%%=v(@odn)=%%\\r\\n \\r\\nMy Question:\\r\\n \\r\\n%%=v(@myq)=%%\\r\\n \\r\\nComment:\\r\\n \\r\\n%%=v(@com)=%%\\r\\n \\r\\nThis email was sent by: %%Member_Busname%%\\r\\n%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%\\r\\n \\r\\nUpdate Profile\\r\\n%%profile_center_url%%\\r\\n\"\n    \t\n    },\n    \"subjectline\": {\n    \t \"content\": \"Contact Us: %%=AttributeValue(\\\"MyQuestion\\\")=%%\"\n    },\n    \"preheader\": {}\n  },\n  \"assetType\": {\n    \"name\": \"htmlemail\",\n    \"id\": 208\n   }\n}"
+						},
+						"url": {
+							"raw": "{{restEndPoint}}/asset/v1/content/assets",
+							"host": [
+								"{{restEndPoint}}"
+							],
+							"path": [
+								"asset",
+								"v1",
+								"content",
+								"assets"
+							]
+						},
+						"description": "Adding the Account Created Email Template"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Contact Us Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n         <Options/>\n         <Objects xsi:type=\"TriggeredSendDefinition\">\n            <PartnerKey xsi:nil=\"true\"/>\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>customerService.contactUs</CustomerKey>\n            <Name>Contact Us</Name>\n            <SendClassification>\n               <PartnerKey xsi:nil=\"true\"/>\n               <CustomerKey>Default Transactional</CustomerKey>\n               <ObjectID xsi:nil=\"true\"/>\n            </SendClassification>\n            <Email>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ObjectID xsi:nil=\"true\"/>\n               <ID>{{contactUsEmailId}}</ID>\n            </Email>\n            <SendSourceDataExtension>\n               <CustomerKey>ContactUs</CustomerKey>\n            </SendSourceDataExtension>\n         </Objects>\n      </CreateRequest>\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						},
+						"description": "Create Account Created Trig Send"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Contact Us Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n    <UpdateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <Options/>\n        <Objects xsi:type=\"TriggeredSendDefinition\">\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>customerService.contactUs</CustomerKey>\n            <TriggeredSendStatus>Active</TriggeredSendStatus> \n        </Objects>\n    </UpdateRequest>\n\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Gift Certificate - Send",
+			"item": [
+				{
+					"name": "Gift Certificate DE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2354435a-759c-423f-b516-b72199fbc5f4",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <!--\n            <Options>\n             <SendResponseTo>\n      \t\t<ResponseType>email</ResponseType>\n      \t\t<ResponseAddress>your_address@salesforce.com</ResponseAddress>\n      \t\t<RespondWhen>OnCallComplete</RespondWhen>\n      \t\t<IncludeResults>true</IncludeResults>\n      \t\t<IncludeObjects>true</IncludeObjects>\n  \t\t   </SendResponseTo>\n             <RequestType>Asynchronous</RequestType>\n      \t    </Options>\n      \t-->\n         <Objects xsi:type=\"DataExtension\">\n            <Client>\n                <ID>{{sfmcClientId}}</ID>\n            </Client>\n            <CustomerKey>GiftCertificate</CustomerKey>\n            <Name>GiftCertificate</Name>\n            <!-- Specify folder DE created in\n            <CategoryID>432655</CategoryID>\n            -->\n            <IsSendable>true</IsSendable>\n            <IsTestable>true</IsTestable>\n             <Template>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ModifiedDate xsi:nil=\"true\"/>\n               <ObjectID>{{sfmcTrigSendTemplateId}}</ObjectID>\n             </Template>\n            <Fields>\n                <Field>\n                    <CustomerKey>Amount</CustomerKey>\n                    <Name>Amount</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>AmountCurrencyCode</CustomerKey>\n                    <Name>AmountCurrencyCode</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                 <Field>\n                    <CustomerKey>AmountDecimalValue\n</CustomerKey>\n                    <Name>AmountDecimalValue\n</Name>\n                    <FieldType>Decimal</FieldType>\n                    <Precision>18</Precision>\n                  <Scale>2</Scale>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n                <Field>\n                    <CustomerKey>GiftCertificateCode</CustomerKey>\n                    <Name>GiftCertificateCode</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>RecipientName</CustomerKey>\n                    <Name>RecipientName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>SenderName</CustomerKey>\n                    <Name>SenderName</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>Message</CustomerKey>\n                    <Name>Message</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>StoreHomeLink</CustomerKey>\n                    <Name>StoreHomeLink</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>250</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>SiteID</CustomerKey>\n                    <Name>SiteID</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field> \n            </Fields>\n         </Objects>\n\t\t</CreateRequest>\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gift Certificate Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2fca7df0-57b1-4df2-b4d5-5a0d7c704d1b",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"if (data.id) {",
+									"  tests[\"Body has id\"] = true; ",
+									"  postman.setEnvironmentVariable(\"giftcertificateEmailId\", data.data.email.legacy.legacyId);",
+									"}",
+									"else {",
+									"  tests[\"Body has id\"] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"GiftCertificate\",\n  \"channels\": {\n    \"email\": true,\n    \"web\": false\n  },\n  \"views\": {\n    \"html\": {\n      \"content\": \"%%[\\r\\nvar @amount, @amtcurcode, @amtdecval, @gccode\\r\\nvar @recname, @sendname, @gcmsg, @storelink, @culture\\r\\n\\r\\nSET @amount = AttributeValue(\\\"Amount\\\")\\r\\nSET @amtcurcode = AttributeValue(\\\"AmountCurrencyCode\\\")\\r\\nSET @amtdecval = AttributeValue(\\\"AmountDecimalValue\\\")\\r\\nSET @gccode = AttributeValue(\\\"GiftCertificateCode\\\")\\r\\nSET @recname = AttributeValue(\\\"RecipientName\\\")\\r\\nSET @sendname = AttributeValue(\\\"SenderName\\\")\\r\\nSET @gcmsg = AttributeValue(\\\"Message\\\")\\r\\nSET @storelink = AttributeValue(\\\"StoreHomeLink\\\")\\r\\n]%%\\r\\n\\r\\n<table width=\\\"100%\\\" cellpadding=\\\"0\\\" cellspacing=\\\"0\\\">\\r\\n    <tr>\\r\\n        <td align=\\\"center\\\" style=\\\"background:#e0e0e0;padding:50px 0;\\\">\\r\\n            <center>\\r\\n                <table style=\\\"background:#ffffff;border:1px solid #999999;width:680px;\\\">\\r\\n                    <tr>\\r\\n                        <td style=\\\"font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;\\\">\\r\\n\\r\\n                            <h1 style=\\\"font-size:20px;font-family:georgia;font-weight:normal;\\\">\\r\\n                                Dear %%=IIF(EMPTY(@recname),\\\"customer\\\",@recname)=%%,<\\/h1>\\r\\n\\r\\n                            <p>\\r\\n                                %%=IIF(EMPTY(@sendname),\\\"Someone\\\",@sendname)=%%\\r\\n                                pays attention to you and has sent you a %%=v(@amount)=%% gift certificate for the <a href=\\\"%%=v(@storelink)=%%\\\">Salesforce Commerce Cloud Online Store<\\/a>.\\r\\n                            <\\/p>\\r\\n\\r\\n                            %%[IF NOT EMPTY(@gcmsg) THEN]%%\\r\\n                                <p>\\r\\n                                    %%=IIF(EMPTY(@sendname),\\\"\\\",@sendname)=%%\\r\\n                                    The following message has been left for you:\\r\\n                                <\\/p>\\r\\n\\r\\n                                <p>\\r\\n                                    %%=v(@gcmsg)=%%\\r\\n                                <\\/p>\\r\\n                            %%[ENDIF]%%\\r\\n\\r\\n                            <p>\\r\\n                                To redeem your gift certificate, use the following code within the billing step of the checkout:\\r\\n                                %%=v(@gccode)=%%\\r\\n                            <\\/p>\\r\\n\\r\\n                        <\\/td>\\r\\n                    <\\/tr>\\r\\n                <\\/table>\\r\\n            <\\/center>\\r\\n        <\\/td>\\r\\n    <\\/tr>\\r\\n<\\/table>\\r\\n\\r\\n<table cellpadding=\\\"2\\\" cellspacing=\\\"0\\\" width=\\\"600\\\" ID=\\\"Table5\\\" Border=0><tr><td><font face=\\\"verdana\\\" size=\\\"1\\\" color=\\\"#444444\\\">This email was sent by: <b>%%Member_Busname%%<\\/b><br>%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%<br><br><\\/font><\\/td><\\/tr><\\/table>\\r\\n\\r\\n<a href=\\\"%%profile_center_url%%\\\" alias=\\\"Update Profile\\\">Update Profile<\\/a>\"\n    },\n    \"text\": {\n    \t\"content\": \"%%[\\r\\nvar @amount, @amtcurcode, @amtdecval, @gccode\\r\\nvar @recname, @sendname, @gcmsg, @storelink, @culture\\r\\n\\r\\nSET @amount = AttributeValue(\\\"Amount\\\")\\r\\nSET @amtcurcode = AttributeValue(\\\"AmountCurrencyCode\\\")\\r\\nSET @amtdecval = AttributeValue(\\\"AmountDecimalValue\\\")\\r\\nSET @gccode = AttributeValue(\\\"GiftCertificateCode\\\")\\r\\nSET @recname = AttributeValue(\\\"RecipientName\\\")\\r\\nSET @sendname = AttributeValue(\\\"SenderName\\\")\\r\\nSET @gcmsg = AttributeValue(\\\"Message\\\")\\r\\nSET @storelink = AttributeValue(\\\"StoreHomeLink\\\")\\r\\n]%%\\r\\n \\r\\nDear %%=IIF(EMPTY(@recname),\\\"customer\\\",@recname)=%%,\\r\\n \\r\\n%%=IIF(EMPTY(@sendname),\\\"Someone\\\",@sendname)=%%\\r\\n \\r\\npays attention to you and has sent you a %%=v(@amount)=%% gift certificate for the Salesforce Commerce Cloud Online Store\\r\\n%%=v(@storelink)=%%\\r\\n.\\r\\n \\r\\n%%[IF NOT EMPTY(@gcmsg) THEN]%%\\r\\n \\r\\n%%=IIF(EMPTY(@sendname),\\\"\\\",@sendname)=%%\\r\\n \\r\\nThe following message has been left for you:\\r\\n \\r\\n%%=v(@gcmsg)=%%\\r\\n \\r\\n%%[ENDIF]%%\\r\\n \\r\\nTo redeem your gift certificate, use the following code within the billing step of the checkout:\\r\\n \\r\\n%%=v(@gccode)=%%\\r\\n \\r\\nThis email was sent by: %%Member_Busname%%\\r\\n%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%\\r\\n \\r\\nUpdate Profile\\r\\n%%profile_center_url%%\\r\\n\"\n    \t\n    },\n    \"subjectline\": {\n    \t \"content\": \"A gift certificate from %%=AttributeValue(\\\"SenderName\\\")=%%\"\n    },\n    \"preheader\": {}\n  },\n  \"assetType\": {\n    \"name\": \"htmlemail\",\n    \"id\": 208\n   }\n}"
+						},
+						"url": {
+							"raw": "{{restEndPoint}}/asset/v1/content/assets",
+							"host": [
+								"{{restEndPoint}}"
+							],
+							"path": [
+								"asset",
+								"v1",
+								"content",
+								"assets"
+							]
+						},
+						"description": "Adding the Account Created Email Template"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Gift Certificate Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n         <Options/>\n         <Objects xsi:type=\"TriggeredSendDefinition\">\n            <PartnerKey xsi:nil=\"true\"/>\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>giftCertificate.sendCertificate</CustomerKey>\n            <Name>Send Gift Certificate</Name>\n            <SendClassification>\n               <PartnerKey xsi:nil=\"true\"/>\n               <CustomerKey>Default Transactional</CustomerKey>\n               <ObjectID xsi:nil=\"true\"/>\n            </SendClassification>\n            <Email>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ObjectID xsi:nil=\"true\"/>\n               <ID>{{giftcertificateEmailId}}</ID>\n            </Email>\n            <SendSourceDataExtension>\n               <CustomerKey>GiftCertificate</CustomerKey>\n            </SendSourceDataExtension>\n         </Objects>\n      </CreateRequest>\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						},
+						"description": "Create Account Created Trig Send"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Gift Certificate Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n    <UpdateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <Options/>\n        <Objects xsi:type=\"TriggeredSendDefinition\">\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>giftCertificate.sendCertificate</CustomerKey>\n            <TriggeredSendStatus>Active</TriggeredSendStatus> \n        </Objects>\n    </UpdateRequest>\n\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order Confirmation",
+			"item": [
+				{
+					"name": "Order DE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2354435a-759c-423f-b516-b72199fbc5f4",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <!--\n            <Options>\n             <SendResponseTo>\n      \t\t<ResponseType>email</ResponseType>\n      \t\t<ResponseAddress>your_address@salesforce.com</ResponseAddress>\n      \t\t<RespondWhen>OnCallComplete</RespondWhen>\n      \t\t<IncludeResults>true</IncludeResults>\n      \t\t<IncludeObjects>true</IncludeObjects>\n  \t\t   </SendResponseTo>\n             <RequestType>Asynchronous</RequestType>\n      \t    </Options>\n      \t-->\n         <Objects xsi:type=\"DataExtension\">\n            <Client>\n                <ID>{{sfmcClientId}}</ID>\n            </Client>\n            <CustomerKey>OrderConfirmation</CustomerKey>\n            <Name>OrderConfirmation</Name>\n            <!-- Specify folder DE created in\n            <CategoryID>432655</CategoryID>\n            -->\n            <IsSendable>true</IsSendable>\n            <IsTestable>true</IsTestable>\n             <Template>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ModifiedDate xsi:nil=\"true\"/>\n               <ObjectID>{{sfmcTrigSendTemplateId}}</ObjectID>\n             </Template>\n            <Fields>\n                <Field>\n                    <CustomerKey>SiteID</CustomerKey>\n                    <Name>SiteID</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>OrderNumber</CustomerKey>\n                    <Name>OrderNumber</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>50</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>OrderAsXML</CustomerKey>\n                    <Name>OrderAsXML</Name>\n                    <FieldType>Text</FieldType>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n            </Fields>\n         </Objects>\n\t\t</CreateRequest>\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ShippingMethods DE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2354435a-759c-423f-b516-b72199fbc5f4",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <!--\n            <Options>\n             <SendResponseTo>\n      \t\t<ResponseType>email</ResponseType>\n      \t\t<ResponseAddress>your_address@salesforce.com</ResponseAddress>\n      \t\t<RespondWhen>OnCallComplete</RespondWhen>\n      \t\t<IncludeResults>true</IncludeResults>\n      \t\t<IncludeObjects>true</IncludeObjects>\n  \t\t   </SendResponseTo>\n             <RequestType>Asynchronous</RequestType>\n      \t    </Options>\n      \t-->\n         <Objects xsi:type=\"DataExtension\">\n            <Client>\n                <ID>{{sfmcClientId}}</ID>\n            </Client>\n            <CustomerKey>ShippingMethods</CustomerKey>\n            <Name>ShippingMethods</Name>\n            <!-- Specify folder DE created in\n            <CategoryID>432655</CategoryID>\n            -->\n            <IsSendable>true</IsSendable>\n            <IsTestable>true</IsTestable>\n             <Template>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ModifiedDate xsi:nil=\"true\"/>\n               <ObjectID>{{sfmcTrigSendTemplateId}}</ObjectID>\n             </Template>\n            <Fields>\n                <Field>\n                    <CustomerKey>Method_ID</CustomerKey>\n                    <Name>Method_ID</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>250</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>Label_en_US</CustomerKey>\n                    <Name>Label_en_US</Name>\n                    <FieldType>Text</FieldType>\n                    <MaxLength>250</MaxLength>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n                <Field>\n                    <CustomerKey>Description_en_US</CustomerKey>\n                    <Name>Description_en_US</Name>\n                    <FieldType>Text</FieldType>\n                    <IsNillable>false</IsNillable>\n                    <IsRequired>true</IsRequired>\n                </Field>\n            </Fields>\n         </Objects>\n\t\t</CreateRequest>\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Order Confirmation Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2fca7df0-57b1-4df2-b4d5-5a0d7c704d1b",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"if (data.id) {",
+									"  tests[\"Body has id\"] = true; ",
+									"  postman.setEnvironmentVariable(\"orderConfirmationEmailId\", data.data.email.legacy.legacyId);",
+									"}",
+									"else {",
+									"  tests[\"Body has id\"] = false;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"OrderConfirmation\",\n  \"channels\": {\n    \"email\": true,\n    \"web\": false\n  },\n  \"views\": {\n    \"html\": {\n      \"content\": \"%%[\\r\\nvar @storename, @storedisplayurl, @storelogo, @storehomepage\\r\\nvar @storeaddress, @storelocation, @storephone\\r\\nvar @confthankyou, @confmessage, @confcontact\\r\\nvar @orderxml, @orderdate, @ordernumber, @order\\r\\nvar @orderTotalSubtotal, @orderTotalTax, @orderTotalGross\\r\\nSET @storename = \\\"Salesforce Commerce Cloud SiteGenesis\\\"\\r\\nSET @storedisplayurl = \\\"salesforce.com\\\"\\r\\nSET @storelogo = \\\"http:\\/\\/www.demandware.com\\/img\\/logos\\/img-demandware-logo.svg\\\"\\r\\nSET @storelink = \\\"http:\\/\\/www.salesforce.com\\/\\\"\\r\\nSET @storeaddress = \\\"5 Wall Street\\\"\\r\\nSET @storelocation = \\\"Burlington, MA 01803\\\"\\r\\nSET @storephone = \\\"Phone: +1.800.555.0199\\\"\\r\\nSET @confthankyou = \\\"Thank you for your order.\\\"\\r\\nSET @confmessage = \\\"If you have questions about your order, we're happy to take your call\\\"\\r\\nSET @confcontact = \\\"1 (800) 555-0199, Monday - Friday 8AM - 8PM\\\"\\r\\nSET @orderxml = AttributeValue(\\\"OrderAsXML\\\")\\r\\n\\r\\nSET @bAddrId = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/id\\\", 0)\\r\\nSET @bAddrId = Iif(RowCount(@bAddrId), Field(Row(@bAddrId, 1), \\\"Value\\\"), \\\"\\\")\\r\\nSET @bAddrFirst = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/first-name\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddrLast = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/last-name\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddr1 = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/address1\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddr2 = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/address2\\\", 0)\\r\\nSET @bAddr2 = Iif(RowCount(@bAddr2), Field(Row(@bAddr2, 1), \\\"Value\\\"), \\\"\\\")\\r\\nSET @bAddrCity = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/city\\\", 0)\\r\\nSET @bAddrCity = Iif(RowCount(@bAddrCity), Field(Row(@bAddrCity, 1), \\\"Value\\\"), \\\"\\\")\\r\\nSET @bAddrPostal = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/postal-code\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddrState = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/state-code\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddrCountry = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/country-code\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddrPhone = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/phone\\\", 0)\\r\\nSET @bAddrPhone = Iif(RowCount(@bAddrPhone), Field(Row(@bAddrPhone, 1), \\\"Value\\\"), \\\"\\\")\\r\\nSET @paymentRows = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/payments\\/payment\\\", 0)\\r\\nSET @shipmentRows = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/shipments\\/shipment\\\", 0)\\r\\nSET @productRows = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/product-lineitems\\/product-lineitem\\\", 0)\\r\\nSET @merchTotalRow = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/merchandize-total\\\", 0)\\r\\nSET @adjMerchTotalRow = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/adjusted-merchandize-total\\\", 0)\\r\\nSET @shippingTotalRow = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/shipping-total\\\", 0)\\r\\nSET @adjShippingTotalRow = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/adjusted-shipping-total\\\", 0)\\r\\nSET @orderTotalRow = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/order-total\\\", 0)\\r\\nSET @ordernumber = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/original-order-no\\\", 0), 1), \\\"Value\\\")\\r\\n\\r\\nSET @orderTotalSubtotal = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/adjusted-merchandize-total\\/net-price\\\", 0), 1), \\\"Value\\\")\\r\\nSET @orderTotalTax = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/order-total\\/tax\\\", 0), 1), \\\"Value\\\")\\r\\nSET @orderTotalGross = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/order-total\\/gross-price\\\", 0), 1), \\\"Value\\\")\\r\\nSET @shippingTotalGross = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/shipping-total\\/gross-price\\\", 0), 1), \\\"Value\\\")\\r\\nSET @orderdate = Format(Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/order-date\\\", 0), 1), \\\"Value\\\"), \\\"MMMM d, yyyy\\\")\\r\\n\\r\\nSET @locale = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer-locale\\\", 0), 1), \\\"Value\\\")\\r\\n\\r\\nif empty(@locale) then\\r\\nSET @locale = \\\"en_US\\\"\\r\\nendif\\r\\n]%%\\r\\n<div class=\\\"main-content\\\" style=\\\"font-size:12px; font-family:arial; width:680px;\\\">\\r\\n    <table class=\\\"store-info-content\\\" style=\\\"width:100%;\\\">\\r\\n        <tr>\\r\\n            <td style=\\\"padding:5px 10px;vertical-align:top;\\\">\\r\\n                <a href=\\\"%%=v(@storelink)=%%\\\" title=\\\"%%=v(@storename)=%%\\\">\\r\\n                    <img src=\\\"%%=v(@storelogo)=%%\\\" alt=\\\"%%=v(@storename)=%%\\\" style=\\\"border:none;\\\">\\r\\n                <\\/a>\\r\\n            <\\/td>\\r\\n            <td style=\\\"padding:5px 10px;vertical-align:top;\\\">\\r\\n                <strong>%%=v(@storename)=%%<\\/strong>\\r\\n                <br>%%=v(@storeaddress)=%%\\r\\n                <br>%%=v(@storelocation)=%%\\r\\n                <br>\\r\\n                <a href=\\\"%%=v(@storelink)=%%\\\" title=\\\"Go to Our Store\\\">%%=v(@storedisplayurl)=%%<\\/a>\\r\\n                <br>%%=v(@storephone)=%%\\r\\n            <\\/td>\\r\\n        <\\/tr>\\r\\n    <\\/table>\\r\\n    <table class=\\\"store-message-content\\\" style=\\\"width:100%; border-bottom: 1px solid #999999\\\">\\r\\n        <tr>\\r\\n            <td colspan=\\\"2\\\" style=\\\"padding:10px 10px 5px;vertical-align:top;\\\">\\r\\n                <h2>%%=v(@confthankyou)=%%<\\/h2>\\r\\n                <p>%%=v(@confmessage)=%% %%=v(@confcontact)=%%<\\/p>\\r\\n            <\\/td>\\r\\n        <\\/tr>\\r\\n    <\\/table>\\r\\n    <table style=\\\"width:100%;\\\">\\r\\n        <tr>\\r\\n            <td style=\\\"padding:10px 0;vertical-align:top;\\\" colspan=\\\"2\\\">\\r\\n                <div style=\\\"padding: 0 10px;\\\">\\r\\n                    <h2>Order Number: %%=v(@ordernumber)=%%<\\/h2>\\r\\n                    <p>Order Placed: %%=v(@orderdate)=%%<\\/p>\\r\\n                <\\/div>\\r\\n                <table style=\\\"width:100%\\\">\\r\\n                    <tr>\\r\\n                        <th style=\\\"background:#cccccc;padding:5px 20px;\\\" colspan=\\\"2\\\">Payment Information<\\/th>\\r\\n                    <\\/tr>\\r\\n                    <tr>\\r\\n                        <td style=\\\"padding: 10px;vertical-align:top;\\\">\\r\\n                            <strong>Billing Address<\\/strong>\\r\\n                            %%[ if not empty(@bAddrId) then ]%%\\r\\n                            <div class=\\\"mini-address-title\\\">%%=v(@bAddrId)=%%<\\/div>\\r\\n                            %%[ endif ]%%\\r\\n                            <!-- First and Last Names -->\\r\\n                            <div class=\\\"mini-address-name\\\">%%=v(@bAddrFirst)=%% %%=v(@bAddrLast)=%%<\\/div>\\r\\n                            <div class=\\\"mini-address-location\\\">\\r\\n                                <!-- Address 1 and Address 2 -->\\r\\n                                %%=v(@bAddr1)=%%\\r\\n                                %%[ if not empty(@bAddr2) then ]%%\\r\\n                                <br>%%=v(@bAddr2)=%%\\r\\n                                %%[ endif ]%%\\r\\n                                <!-- City, StateCode, and Zip -->\\r\\n                                %%[ if not empty(@bAddrCity) then ]%%\\r\\n                                <br>%%=v(@bAddrCity)=%%\\r\\n                                %%[ endif ]%%\\r\\n                                %%=v(@bAddrState)=%%\\r\\n                                %%=v(@bAddrPostal)=%%\\r\\n                                <br>\\r\\n                                <!-- Country Name -->\\r\\n                                %%=v(@bAddrCountry)=%%\\r\\n                                <!-- Phone Number -->\\r\\n                                %%[ if not empty(@bAddrPhone) then ]%%\\r\\n                                <br>%%=v(@bAddrPhone)=%%\\r\\n                                %%[ endif ]%%\\r\\n                            <\\/div>\\r\\n                            <div>\\r\\n                                %%[ if RowCount(@paymentRows) == 1 then ]%%\\r\\n                                <strong>Payment Method<\\/strong>\\r\\n                                %%[ else ]%%\\r\\n                                <strong>Payment Methods<\\/strong>\\r\\n                                %%[ endif ]%%\\r\\n                                <!-- Render All Payment Instruments -->\\r\\n                                %%[ for @i = 1 to RowCount(@paymentRows) do\\r\\n                                SET @payXML = Concat( \\\"<payment>\\\", Field(Row(@paymentRows, @i), \\\"XML\\\"), \\\"<\\/payment>\\\")\\r\\n                                SET @payId = Trim(Field(Row(BuildRowSetFromXML(@payXML, \\\"\\/payment\\/processor-id\\\", 0), 1), \\\"Value\\\"))\\r\\n                                SET @payAmount = FormatCurrency(Field(Row(BuildRowSetFromXML(@payXML, \\\"\\/payment\\/amount\\\", 0), 1), \\\"Value\\\"))\\r\\n                                if @payId == \\\"BASIC_CREDIT\\\" then\\r\\n                                SET @payName = \\\"Credit Card\\\"\\r\\n                                SET @payDisplay = Field(Row(BuildRowSetFromXML(@payXML, \\\"\\/payment\\/credit-card\\/card-type\\\", 0), 1), \\\"Value\\\")\\r\\n                                SET @payDisplay = Concat(@payDisplay, \\\": \\\")\\r\\n                                SET @payDisplay = Concat(@payDisplay, Field(Row(BuildRowSetFromXML(@payXML, \\\"\\/payment\\/credit-card\\/card-number\\\", 0), 1), \\\"Value\\\"))\\r\\n                                endif\\r\\n                                if @payId == \\\"METHOD_GIFT_CERTIFICATE\\\" then\\r\\n                                SET @payName = \\\"Gift Card\\\"\\r\\n                                SET @payDisplay = Field(Row(BuildRowSetFromXML(@payXML, \\\"\\/payment\\/gift-card\\/code\\\", 0), 1), \\\"Value\\\")\\r\\n                                endif\\r\\n                                ]%%\\r\\n                                <div>%%=v(@payName)=%%<\\/div>\\r\\n                                %%=v(@payDisplay)=%%\\r\\n                                <div>\\r\\n                                    <span class=\\\"label\\\">Amount: <\\/span>\\r\\n                                    <span class=\\\"value\\\">$%%=v(@payAmount)=%%<\\/span>\\r\\n                                <\\/div>\\r\\n                                %%[ next @i ]%%\\r\\n                            <\\/div>\\r\\n                        <\\/td>\\r\\n                        <td style=\\\"padding: 10px;vertical-align:top;\\\">\\r\\n                            <strong>Payment Total<\\/strong><br>\\r\\n                            <strong>Subtotal:<\\/strong> $%%=v(@orderTotalSubtotal)=%% <br>\\r\\n                            <strong>Shipping:<\\/strong> $%%=v(@shippingTotalGross)=%% <br>\\r\\n                            <strong>Tax:<\\/strong> $%%=v(@orderTotalTax)=%% <br>\\r\\n                            <strong>Order Total:<\\/strong> $%%=v(@orderTotalGross)=%%\\r\\n                        <\\/td>\\r\\n                    <\\/tr>\\r\\n                <\\/table>\\r\\n            <\\/td>\\r\\n        <\\/tr>\\r\\n    <\\/table>\\r\\n    <table style=\\\"width:100%\\\">\\r\\n        <tr>\\r\\n            <th style=\\\"background:#cccccc;padding:5px 20px;\\\" colspan=\\\"2\\\">Shipment Information<\\/th>\\r\\n        <\\/tr>\\r\\n        <tr>\\r\\n            <td style=\\\"padding: 10px 20px 5px;\\\">\\r\\n                <!-- render a box for each shipment -->\\r\\n                %%[ for @x = 1 to RowCount(@shipmentRows) do\\r\\n                SET @shipXML = Concat(\\\"<shipment>\\\", Field(Row(@shipmentRows, @x), \\\"XML\\\"), \\\"<\\/shipment>\\\")\\r\\n                SET @shipNum = Field(Row(@shipmentRows, @x), \\\"Shipment-id_att\\\")\\r\\n                SET @shipMethod = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-method\\\", 0), 1), \\\"Value\\\"))\\r\\n\\r\\n                SET @shipMethodName = Lookup(\\\"ShippingMethods\\\",Concat(\\\"Label_\\\", @locale),\\\"Method_ID\\\",@shipMethod)\\r\\n                SET @shipDescription = Lookup(\\\"ShippingMethods\\\",Concat(\\\"Description_\\\", @locale),\\\"Method_ID\\\",@shipMethod)\\r\\n\\r\\n                SET @shipMethodStatus = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/status\\/shipping-status\\\", 0), 1), \\\"Value\\\"))\\r\\n                SET @shipMethodStatusName = \\\"\\\"\\r\\n\\r\\n                if not empty(@shipMethodStatus) then\\r\\n                if @shipMethodStatus == \\\"NOT_SHIPPED\\\" then\\r\\n                SET @shipMethodStatusName = \\\"Not Shipped\\\"\\r\\n                elseif @shipMethodStatus == \\\"SHIPPED\\\" then\\r\\n                SET @shipMethodStatusName = \\\"Shipped\\\"\\r\\n                endif\\r\\n                endif\\r\\n\\r\\n                if @shipMethod != \\\"005\\\" then\\r\\n                SET @sAddrFirst = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/first-name\\\", 0), 1), \\\"Value\\\"))\\r\\n                SET @sAddrLast = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/last-name\\\", 0), 1), \\\"Value\\\"))\\r\\n                SET @sAddr1 = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/address1\\\", 0), 1), \\\"Value\\\"))\\r\\n                SET @sAddr2 = BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/address2\\\", 0)\\r\\n                SET @sAddr2 = Iif(RowCount(@sAddr2), Trim(Field(Row(@sAddr2, 1), \\\"Value\\\")), \\\"\\\")\\r\\n                SET @sAddrCity = BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/city\\\", 0)\\r\\n                SET @sAddrCity = Iif(RowCount(@sAddrCity), Trim(Field(Row(@sAddrCity, 1), \\\"Value\\\")), \\\"\\\")\\r\\n                SET @sAddrPostal = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/postal-code\\\", 0), 1), \\\"Value\\\"))\\r\\n                SET @sAddrState = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/state-code\\\", 0), 1), \\\"Value\\\"))\\r\\n                SET @sAddrCountry = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/country-code\\\", 0), 1), \\\"Value\\\"))\\r\\n                SET @sAddrPhone = BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/phone\\\", 0)\\r\\n                SET @sAddrPhone = Iif(RowCount(@sAddrPhone), Trim(Field(Row(@sAddrPhone, 1), \\\"Value\\\")), \\\"\\\")\\r\\n                endif\\r\\n                ]%%\\r\\n                <strong style=\\\"font-size: 15px;\\\">Shipment No %%=v(@x)=%%<\\/strong>\\r\\n                <div class=\\\"shipment-content\\\" style=\\\"padding: 5px 10px 10px; background-color:#efefef; margin-bottom: 10px;\\\">\\r\\n                    <table style=\\\"width:100%;\\\" class=\\\"shipment-details\\\">\\r\\n                        <tr>\\r\\n                            <td valign=\\\"top\\\">\\r\\n                                %%[ if not empty(@shipMethodStatusName) then ]%%\\r\\n                                <strong>Shipping Status:<\\/strong><br>\\r\\n                                %%=v(@shipMethodStatusName)=%%<br>\\r\\n                                %%[ endif ]%%\\r\\n                                <strong>Method:<\\/strong><br>\\r\\n                                %%=v(@shipMethodName)=%%\\r\\n                            <\\/td>\\r\\n                            <td valign=\\\"top\\\">\\r\\n                                <strong>Shipping Address<\\/strong>\\r\\n                                <!-- First and Last Names -->\\r\\n                                <div class=\\\"mini-address-name\\\">%%=v(@sAddrFirst)=%% %%=v(@sAddrLast)=%%<\\/div>\\r\\n                                <div class=\\\"mini-address-location\\\">\\r\\n                                    <!-- Address 1 and Address 2 -->\\r\\n                                    %%=v(@sAddr1)=%%\\r\\n                                    %%[ if not empty(@sAddr2) then ]%%\\r\\n                                    <br>%%=v(@sAddr2)=%%\\r\\n                                    %%[ endif ]%%\\r\\n                                    <!-- City, StateCode, and Zip -->\\r\\n                                    %%[ if not empty(@sAddrCity) then ]%%\\r\\n                                    <br>%%=v(@sAddrCity)=%%\\r\\n                                    %%[ endif ]%%\\r\\n                                    %%=v(@sAddrState)=%%\\r\\n                                    %%=v(@sAddrPostal)=%%\\r\\n                                    <br>\\r\\n                                    <!-- Country Name -->\\r\\n                                    %%=v(@sAddrCountry)=%%\\r\\n                                    <!-- Phone Number -->\\r\\n                                    %%[ if not empty(@sAddrPhone) then ]%%\\r\\n                                    <br>%%=v(@sAddrPhone)=%%\\r\\n                                    %%[ endif ]%%\\r\\n                                <\\/div>\\r\\n                            <\\/td>\\r\\n                        <\\/tr>\\r\\n                    <\\/table>\\r\\n                    <table style=\\\"width:100%; border: 1px solid #cccccc; margin-top: 10px;\\\" class=\\\"product-details\\\" cellspacing=\\\"0\\\" cellpadding=\\\"0\\\">\\r\\n                        <tr>\\r\\n                            <th style=\\\"text-align:left; padding: 5px 10px;\\\">Item<\\/th>\\r\\n                            <th style=\\\"padding: 5px 10px;\\\">Qty<\\/th>\\r\\n                            <th style=\\\"padding: 5px 10px;\\\">Price<\\/th>\\r\\n                        <\\/tr>\\r\\n                        %%[ for @j = 1 to RowCount(@productRows) do\\r\\n                        SET @productXML = Concat(\\\"<product>\\\", Field(Row(@productRows, @j), \\\"XML\\\"), \\\"<\\/product>\\\")\\r\\n                        SET @productShipmentId = Trim(Field(Row(BuildRowSetFromXML(@productXML, \\\"product\\/shipment-id\\\", 0), 1), \\\"Value\\\"))\\r\\n\\r\\n                        if @shipNum == @productShipmentId then\\r\\n                        SET @productName = Trim(Field(Row(BuildRowSetFromXML(@productXML, \\\"\\/product\\/product-name\\\", 0), 1), \\\"Value\\\"))\\r\\n                        SET @productId = Trim(Field(Row(BuildRowSetFromXML(@productXML, \\\"\\/product\\/product-id\\\", 0), 1), \\\"Value\\\"))\\r\\n                        SET @productQty = Trim(Field(Row(BuildRowSetFromXML(@productXML, \\\"\\/product\\/quantity\\\", 0), 1), \\\"Value\\\"))\\r\\n                        SET @productPrice = Trim(Field(Row(BuildRowSetFromXML(@productXML, \\\"\\/product\\/net-price\\\", 0), 1), \\\"Value\\\"))\\r\\n                        SET @rowColor = Iif(Mod(@j,2) == 0, \\\"#efefef\\\", \\\"#ffffff\\\")\\r\\n                        ]%%\\r\\n                        <tr style=\\\"background-color:%%=v(@rowColor)=%%;\\\">\\r\\n                            <td style=\\\"padding: 3px 10px;\\\">\\r\\n                                <span style=\\\"font-size: 13px;\\\">%%=v(@productName)=%%<\\/span>\\r\\n                                <br><span style=\\\"color: #333333;\\\">Item No. %%=v(@productId)=%%<\\/span>\\r\\n                            <\\/td>\\r\\n                            <td style=\\\"text-align: right; padding: 3px 0;\\\">%%=v(@productQty)=%%<\\/td>\\r\\n                            <td style=\\\"text-align: right; padding: 3px 10px 3px 0;\\\">$%%=v(@productPrice)=%%<\\/td>\\r\\n                        <\\/tr>\\r\\n                        %%[ endif ]%%\\r\\n                        %%[ next @j ]%%\\r\\n                    <\\/table>\\r\\n                <\\/div>\\r\\n                %%[ next @x ]%%\\r\\n            <\\/td>\\r\\n        <\\/tr>\\r\\n    <\\/table>\\r\\n<\\/div>\\r\\n\\r\\n<table cellpadding=\\\"2\\\" cellspacing=\\\"0\\\" width=\\\"600\\\" ID=\\\"Table5\\\" Border=0><tr><td><font face=\\\"verdana\\\" size=\\\"1\\\" color=\\\"#444444\\\">This email was sent by: <b>%%Member_Busname%%<\\/b><br>%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%<br><br><\\/font><\\/td><\\/tr><\\/table>\\r\\n\\r\\n<a href=\\\"%%profile_center_url%%\\\" alias=\\\"Update Profile\\\">Update Profile<\\/a>\"\n    },\n    \"text\": {\n    \t\"content\": \"%%[\\r\\nvar @storename, @storedisplayurl, @storelogo, @storehomepage\\r\\nvar @storeaddress, @storelocation, @storephone\\r\\nvar @confthankyou, @confmessage, @confcontact\\r\\nvar @orderxml, @orderdate, @ordernumber, @order\\r\\nvar @orderTotalSubtotal, @orderTotalTax, @orderTotalGross\\r\\nSET @storename = \\\"Salesforce Commerce Cloud SiteGenesis\\\"\\r\\nSET @storedisplayurl = \\\"salesforce.com\\\"\\r\\nSET @storelogo = \\\"http:\\/\\/www.demandware.com\\/img\\/logos\\/img-demandware-logo.svg\\\"\\r\\nSET @storelink = \\\"http:\\/\\/www.salesforce.com\\/\\\"\\r\\nSET @storeaddress = \\\"5 Wall Street\\\"\\r\\nSET @storelocation = \\\"Burlington, MA 01803\\\"\\r\\nSET @storephone = \\\"Phone: +1.800.555.0199\\\"\\r\\nSET @confthankyou = \\\"Thank you for your order.\\\"\\r\\nSET @confmessage = \\\"If you have questions about your order, we're happy to take your call\\\"\\r\\nSET @confcontact = \\\"1 (800) 555-0199, Monday - Friday 8AM - 8PM\\\"\\r\\nSET @orderxml = AttributeValue(\\\"OrderAsXML\\\")\\r\\n\\r\\nSET @bAddrId = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/id\\\", 0)\\r\\nSET @bAddrId = Iif(RowCount(@bAddrId), Field(Row(@bAddrId, 1), \\\"Value\\\"), \\\"\\\")\\r\\nSET @bAddrFirst = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/first-name\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddrLast = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/last-name\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddr1 = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/address1\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddr2 = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/address2\\\", 0)\\r\\nSET @bAddr2 = Iif(RowCount(@bAddr2), Field(Row(@bAddr2, 1), \\\"Value\\\"), \\\"\\\")\\r\\nSET @bAddrCity = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/city\\\", 0)\\r\\nSET @bAddrCity = Iif(RowCount(@bAddrCity), Field(Row(@bAddrCity, 1), \\\"Value\\\"), \\\"\\\")\\r\\nSET @bAddrPostal = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/postal-code\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddrState = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/state-code\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddrCountry = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/country-code\\\", 0), 1), \\\"Value\\\")\\r\\nSET @bAddrPhone = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer\\/billing-address\\/phone\\\", 0)\\r\\nSET @bAddrPhone = Iif(RowCount(@bAddrPhone), Field(Row(@bAddrPhone, 1), \\\"Value\\\"), \\\"\\\")\\r\\nSET @paymentRows = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/payments\\/payment\\\", 0)\\r\\nSET @shipmentRows = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/shipments\\/shipment\\\", 0)\\r\\nSET @productRows = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/product-lineitems\\/product-lineitem\\\", 0)\\r\\nSET @merchTotalRow = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/merchandize-total\\\", 0)\\r\\nSET @adjMerchTotalRow = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/adjusted-merchandize-total\\\", 0)\\r\\nSET @shippingTotalRow = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/shipping-total\\\", 0)\\r\\nSET @adjShippingTotalRow = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/adjusted-shipping-total\\\", 0)\\r\\nSET @orderTotalRow = BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/order-total\\\", 0)\\r\\nSET @ordernumber = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/original-order-no\\\", 0), 1), \\\"Value\\\")\\r\\n\\r\\nSET @orderTotalSubtotal = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/adjusted-merchandize-total\\/net-price\\\", 0), 1), \\\"Value\\\")\\r\\nSET @orderTotalTax = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/order-total\\/tax\\\", 0), 1), \\\"Value\\\")\\r\\nSET @orderTotalGross = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/order-total\\/gross-price\\\", 0), 1), \\\"Value\\\")\\r\\nSET @shippingTotalGross = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/totals\\/shipping-total\\/gross-price\\\", 0), 1), \\\"Value\\\")\\r\\nSET @orderdate = Format(Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/order-date\\\", 0), 1), \\\"Value\\\"), \\\"MMMM d, yyyy\\\")\\r\\n\\r\\nSET @locale = Field(Row(BuildRowSetFromXML(@orderxml, \\\"\\/order\\/customer-locale\\\", 0), 1), \\\"Value\\\")\\r\\n\\r\\nif empty(@locale) then\\r\\nSET @locale = \\\"en_US\\\"\\r\\nendif\\r\\n]%%\\r\\n \\r\\n%%=v(@storelink)=%%\\r\\n \\r\\n%%=v(@storename)=%%\\r\\n \\r\\n%%=v(@storeaddress)=%%\\r\\n \\r\\n%%=v(@storelocation)=%%\\r\\n \\r\\n%%=v(@storedisplayurl)=%%\\r\\n%%=v(@storelink)=%%\\r\\n \\r\\n%%=v(@storephone)=%%\\r\\n \\r\\n%%=v(@confthankyou)=%%\\r\\n \\r\\n%%=v(@confmessage)=%% %%=v(@confcontact)=%%\\r\\n \\r\\nOrder Number: %%=v(@ordernumber)=%%\\r\\n \\r\\nOrder Placed: %%=v(@orderdate)=%%\\r\\n \\r\\nPayment Information\\r\\n \\r\\nBilling Address\\r\\n \\r\\n%%[ if not empty(@bAddrId) then ]%%\\r\\n \\r\\n%%=v(@bAddrId)=%%\\r\\n \\r\\n%%[ endif ]%%\\r\\n \\r\\n%%=v(@bAddrFirst)=%% %%=v(@bAddrLast)=%%\\r\\n \\r\\n%%=v(@bAddr1)=%%\\r\\n \\r\\n%%[ if not empty(@bAddr2) then ]%%\\r\\n \\r\\n%%=v(@bAddr2)=%%\\r\\n \\r\\n%%[ endif ]%%\\r\\n \\r\\n%%[ if not empty(@bAddrCity) then ]%%\\r\\n \\r\\n%%=v(@bAddrCity)=%%\\r\\n \\r\\n%%[ endif ]%%\\r\\n \\r\\n%%=v(@bAddrState)=%%\\r\\n \\r\\n%%=v(@bAddrPostal)=%%\\r\\n \\r\\n%%=v(@bAddrCountry)=%%\\r\\n \\r\\n%%[ if not empty(@bAddrPhone) then ]%%\\r\\n \\r\\n%%=v(@bAddrPhone)=%%\\r\\n \\r\\n%%[ endif ]%%\\r\\n \\r\\n%%[ if RowCount(@paymentRows) == 1 then ]%%\\r\\n \\r\\nPayment Method\\r\\n \\r\\n%%[ else ]%%\\r\\n \\r\\nPayment Methods\\r\\n \\r\\n%%[ endif ]%%\\r\\n \\r\\n%%[ for @i = 1 to RowCount(@paymentRows) do\\r\\n \\r\\nSET @payXML = Concat( \\\"\\\", Field(Row(@paymentRows, @i), \\\"XML\\\"), \\\"\\\")\\r\\n \\r\\nSET @payId = Trim(Field(Row(BuildRowSetFromXML(@payXML, \\\"\\/payment\\/processor-id\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @payAmount = FormatCurrency(Field(Row(BuildRowSetFromXML(@payXML, \\\"\\/payment\\/amount\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nif @payId == \\\"BASIC_CREDIT\\\" then\\r\\n \\r\\nSET @payName = \\\"Credit Card\\\"\\r\\n \\r\\nSET @payDisplay = Field(Row(BuildRowSetFromXML(@payXML, \\\"\\/payment\\/credit-card\\/card-type\\\", 0), 1), \\\"Value\\\")\\r\\n \\r\\nSET @payDisplay = Concat(@payDisplay, \\\": \\\")\\r\\n \\r\\nSET @payDisplay = Concat(@payDisplay, Field(Row(BuildRowSetFromXML(@payXML, \\\"\\/payment\\/credit-card\\/card-number\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nendif\\r\\n \\r\\nif @payId == \\\"METHOD_GIFT_CERTIFICATE\\\" then\\r\\n \\r\\nSET @payName = \\\"Gift Card\\\"\\r\\n \\r\\nSET @payDisplay = Field(Row(BuildRowSetFromXML(@payXML, \\\"\\/payment\\/gift-card\\/code\\\", 0), 1), \\\"Value\\\")\\r\\n \\r\\nendif\\r\\n \\r\\n]%%\\r\\n \\r\\n%%=v(@payName)=%%\\r\\n \\r\\n%%=v(@payDisplay)=%%\\r\\n \\r\\nAmount:\\r\\n \\r\\n$%%=v(@payAmount)=%%\\r\\n \\r\\n%%[ next @i ]%%\\r\\n \\r\\nPayment Total\\r\\n \\r\\nSubtotal: $%%=v(@orderTotalSubtotal)=%%\\r\\n \\r\\nShipping: $%%=v(@shippingTotalGross)=%%\\r\\n \\r\\nTax: $%%=v(@orderTotalTax)=%%\\r\\n \\r\\nOrder Total: $%%=v(@orderTotalGross)=%%\\r\\n \\r\\nShipment Information\\r\\n \\r\\n%%[ for @x = 1 to RowCount(@shipmentRows) do\\r\\n \\r\\nSET @shipXML = Concat(\\\"\\\", Field(Row(@shipmentRows, @x), \\\"XML\\\"), \\\"\\\")\\r\\n \\r\\nSET @shipNum = Field(Row(@shipmentRows, @x), \\\"Shipment-id_att\\\")\\r\\n \\r\\nSET @shipMethod = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-method\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @shipMethodName = Lookup(\\\"ShippingMethods\\\",Concat(\\\"Label_\\\", @locale),\\\"Method_ID\\\",@shipMethod)\\r\\n \\r\\nSET @shipDescription = Lookup(\\\"ShippingMethods\\\",Concat(\\\"Description_\\\", @locale),\\\"Method_ID\\\",@shipMethod)\\r\\n \\r\\nSET @shipMethodStatus = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/status\\/shipping-status\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @shipMethodStatusName = \\\"\\\"\\r\\n \\r\\nif not empty(@shipMethodStatus) then\\r\\n \\r\\nif @shipMethodStatus == \\\"NOT_SHIPPED\\\" then\\r\\n \\r\\nSET @shipMethodStatusName = \\\"Not Shipped\\\"\\r\\n \\r\\nelseif @shipMethodStatus == \\\"SHIPPED\\\" then\\r\\n \\r\\nSET @shipMethodStatusName = \\\"Shipped\\\"\\r\\n \\r\\nendif\\r\\n \\r\\nendif\\r\\n \\r\\nif @shipMethod != \\\"005\\\" then\\r\\n \\r\\nSET @sAddrFirst = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/first-name\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @sAddrLast = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/last-name\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @sAddr1 = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/address1\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @sAddr2 = BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/address2\\\", 0)\\r\\n \\r\\nSET @sAddr2 = Iif(RowCount(@sAddr2), Trim(Field(Row(@sAddr2, 1), \\\"Value\\\")), \\\"\\\")\\r\\n \\r\\nSET @sAddrCity = BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/city\\\", 0)\\r\\n \\r\\nSET @sAddrCity = Iif(RowCount(@sAddrCity), Trim(Field(Row(@sAddrCity, 1), \\\"Value\\\")), \\\"\\\")\\r\\n \\r\\nSET @sAddrPostal = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/postal-code\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @sAddrState = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/state-code\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @sAddrCountry = Trim(Field(Row(BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/country-code\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @sAddrPhone = BuildRowSetFromXML(@shipXML, \\\"\\/shipment\\/shipping-address\\/phone\\\", 0)\\r\\n \\r\\nSET @sAddrPhone = Iif(RowCount(@sAddrPhone), Trim(Field(Row(@sAddrPhone, 1), \\\"Value\\\")), \\\"\\\")\\r\\n \\r\\nendif\\r\\n \\r\\n]%%\\r\\n \\r\\nShipment No %%=v(@x)=%%\\r\\n \\r\\n%%[ if not empty(@shipMethodStatusName) then ]%%\\r\\n \\r\\nShipping Status:\\r\\n \\r\\n%%=v(@shipMethodStatusName)=%%\\r\\n \\r\\n%%[ endif ]%%\\r\\n \\r\\nMethod:\\r\\n \\r\\n%%=v(@shipMethodName)=%%\\r\\n \\r\\nShipping Address\\r\\n \\r\\n%%=v(@sAddrFirst)=%% %%=v(@sAddrLast)=%%\\r\\n \\r\\n%%=v(@sAddr1)=%%\\r\\n \\r\\n%%[ if not empty(@sAddr2) then ]%%\\r\\n \\r\\n%%=v(@sAddr2)=%%\\r\\n \\r\\n%%[ endif ]%%\\r\\n \\r\\n%%[ if not empty(@sAddrCity) then ]%%\\r\\n \\r\\n%%=v(@sAddrCity)=%%\\r\\n \\r\\n%%[ endif ]%%\\r\\n \\r\\n%%=v(@sAddrState)=%%\\r\\n \\r\\n%%=v(@sAddrPostal)=%%\\r\\n \\r\\n%%=v(@sAddrCountry)=%%\\r\\n \\r\\n%%[ if not empty(@sAddrPhone) then ]%%\\r\\n \\r\\n%%=v(@sAddrPhone)=%%\\r\\n \\r\\n%%[ endif ]%%\\r\\n \\r\\n%%[ for @j = 1 to RowCount(@productRows) do\\r\\n \\r\\nSET @productXML = Concat(\\\"\\\", Field(Row(@productRows, @j), \\\"XML\\\"), \\\"\\\")\\r\\n \\r\\nSET @productShipmentId = Trim(Field(Row(BuildRowSetFromXML(@productXML, \\\"product\\/shipment-id\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nif @shipNum == @productShipmentId then\\r\\n \\r\\nSET @productName = Trim(Field(Row(BuildRowSetFromXML(@productXML, \\\"\\/product\\/product-name\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @productId = Trim(Field(Row(BuildRowSetFromXML(@productXML, \\\"\\/product\\/product-id\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @productQty = Trim(Field(Row(BuildRowSetFromXML(@productXML, \\\"\\/product\\/quantity\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @productPrice = Trim(Field(Row(BuildRowSetFromXML(@productXML, \\\"\\/product\\/net-price\\\", 0), 1), \\\"Value\\\"))\\r\\n \\r\\nSET @rowColor = Iif(Mod(@j,2) == 0, \\\"#efefef\\\", \\\"#ffffff\\\")\\r\\n \\r\\n]%%\\r\\n \\r\\n%%[ endif ]%%\\r\\n \\r\\n%%[ next @j ]%%\\r\\n \\r\\nItem\\r\\n \\r\\nQty\\r\\n \\r\\nPrice\\r\\n \\r\\n%%=v(@productName)=%%\\r\\n \\r\\nItem No. %%=v(@productId)=%%\\r\\n \\r\\n%%=v(@productQty)=%%\\r\\n \\r\\n$%%=v(@productPrice)=%%\\r\\n \\r\\n%%[ next @x ]%%\\r\\n \\r\\nThis email was sent by: %%Member_Busname%%\\r\\n%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%\\r\\n \\r\\nUpdate Profile\\r\\n%%profile_center_url%%\\r\\n\"\n    \t\n    },\n    \"subjectline\": {\n    \t \"content\": \"Order Confirmation\"\n    },\n    \"preheader\": {}\n  },\n  \"assetType\": {\n    \"name\": \"htmlemail\",\n    \"id\": 208\n   }\n}"
+						},
+						"url": {
+							"raw": "{{restEndPoint}}/asset/v1/content/assets",
+							"host": [
+								"{{restEndPoint}}"
+							],
+							"path": [
+								"asset",
+								"v1",
+								"content",
+								"assets"
+							]
+						},
+						"description": "Adding the Account Created Email Template"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order Confirmation Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\t\t<CreateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n         <Options/>\n         <Objects xsi:type=\"TriggeredSendDefinition\">\n            <PartnerKey xsi:nil=\"true\"/>\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>order.confirmation</CustomerKey>\n            <Name>Order Confirmation</Name>\n            <SendClassification>\n               <PartnerKey xsi:nil=\"true\"/>\n               <CustomerKey>Default Transactional</CustomerKey>\n               <ObjectID xsi:nil=\"true\"/>\n            </SendClassification>\n            <Email>\n               <PartnerKey xsi:nil=\"true\"/>\n               <ObjectID xsi:nil=\"true\"/>\n               <ID>{{orderConfirmationEmailId}}</ID>\n            </Email>\n            <SendSourceDataExtension>\n               <CustomerKey>OrderConfirmation</CustomerKey>\n            </SendSourceDataExtension>\n         </Objects>\n      </CreateRequest>\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						},
+						"description": "Create Account Created Trig Send"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Order Confirmation Trig Send",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "text/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:a=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns:u=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\n   <s:Header>\n      <a:Action s:mustUnderstand=\"1\">Create</a:Action>\n      <a:MessageID>urn:uuid:{{$guid}}</a:MessageID>\n      <a:ReplyTo>\n         <a:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:Address>\n      </a:ReplyTo>\n      <a:To s:mustUnderstand=\"1\">{{soapEndPoint}}</a:To>\n      <o:Security xmlns:o=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" s:mustUnderstand=\"1\">\n         <o:UsernameToken>\n            <o:Username>{{soapUsername}}</o:Username>\n            <o:Password><![CDATA[{{soapPassword}}]]></o:Password>\n         </o:UsernameToken>\n      </o:Security>\n   </s:Header>\n\t<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n    <UpdateRequest xmlns=\"http://exacttarget.com/wsdl/partnerAPI\">\n        <Options/>\n        <Objects xsi:type=\"TriggeredSendDefinition\">\n            <ObjectID xsi:nil=\"true\"/>\n            <CustomerKey>order.confirmation</CustomerKey>\n            <TriggeredSendStatus>Active</TriggeredSendStatus> \n        </Objects>\n    </UpdateRequest>\n\n\t\n\t</s:Body>\n</s:Envelope>"
+						},
+						"url": {
+							"raw": "{{soapEndPoint}}",
+							"host": [
+								"{{soapEndPoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

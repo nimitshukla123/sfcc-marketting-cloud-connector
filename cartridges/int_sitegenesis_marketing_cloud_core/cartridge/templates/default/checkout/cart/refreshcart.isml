@@ -1,0 +1,10 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+
+This template is intentionally empty.
+
+</iscomment>
+<isscript>
+    var hookHelper = require('int_sitegenesis_marketing_cloud_controllers/cartridge/scripts/template/hookHelper');
+    hookHelper.callHook('app.template.ajaxPartial', null, {pdict: pdict});
+</isscript>
