@@ -10,7 +10,7 @@
     "jsdoc-to-markdown": "^5.0.1",
     "proxyquire": "1.7.4",
     "request-promise": "^4.2.2",
-    "sgmf-scripts": "^2.1.1"
+    "sgmf-scripts": "^2.4.2"
   },
   "scripts": {
     "docs": "jsdoc2md --files cartridges/**/*.js > api.md",
